@@ -1,0 +1,13 @@
+Package: justifieR
+Title: Functions to justify your alpha
+Version: 0.0.0.1
+Authors@R: 
+    person(given = "Daniel",
+           family = "Lakens",
+           role = c("aut", "cre"),
+           email = "D.Lakens@tue.nl",
+           comment = c(ORCID = "0000-0002-0247-239X"))
+Description: Functions to justify your alpha level as a function of the sample size or by minimizing or balancing error rates.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
