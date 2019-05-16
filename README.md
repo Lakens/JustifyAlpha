@@ -7,16 +7,149 @@
 
 <!-- badges: end -->
 
-The goal of justifieR is to provide researchers with ways to justify
-their alpha level. This is work in progress. All code here is an
-untested alpha version that I do not recommend you use in scientific
-publications yet.
+The goal of justifieR is to provide ways for researchers to justify
+their alpha level when designing studies.
 
 ## Installation
 
 You can install the released version of justifieR from
-[CRAN](https://CRAN.R-project.org) with:
+[GitHub](https://github.com/Lakens/justifieR) with:
 
 ``` r
-install.packages("justifieR")
+devtools::install_github("Lakens/justifieR")
 ```
+
+# Minimizing Error Rates
+
+Assume we plan to perform an indepedent *t*-test, where our smallest
+effect size of interest is d = 0.5, and we are planning to collect 64
+participants in each condition. We would normally calculate power as
+follows:
+
+`pwr.t.test(d = 0.5, n = 64, sig.level = 0.05, type = 'two.sample',
+alternative = 'two.sided')$power`
+
+This analysis tells us that we have 80% power with a 5% alpha level for
+our smallest effect size of interest, d = 0.5, when we collect 64
+participants in each condition.
+
+If we design 2000 studies like this, the number of Type 1 and Type 2
+errors we make depend on how often the null hypothesis is true, and how
+often the alternative hypothesis is true. Let’s assume both are equally
+likely for now. This means that in 1000 studies the null hypothesis is
+true, and we will make 50 Type 1 errors. In 1000 studies the alternative
+hypothesis is true, and we will make 100-80 = 20% Type 2 errors, so in
+200 studies we will not observe a significant result even if there is a
+true effect. Combining Type 1 and Type 2 errors, in the long run, we
+should expect 250 of our 2000 studies to yield an error.
+
+The goal in Neyman-Pearson hypothesis testing is to control the number
+of errors we make, as we perform hypothesis tests. Researchers often
+rely on convention when setting error rates, and there is no special
+reason to set the Type 1 error rate at 5% and the Type 2 error rate at
+20%, and there might be better choices when designing studies. For
+example, when collecting 64 participants per condition, it is also not
+optimally efficient to use these norms.
+
+``` r
+res <- optimal_alpha(power_function = "pwr.t.test(d=0.5, n=64, sig.level = x, type='two.sample', alternative='two.sided')$power")
+
+res$alpha
+#> [1] 0.09967892
+res$beta
+#> [1] 0.121652
+```
+
+If a researcher is interested in effects of d = 0.5, and plans to
+collect 64 participants in each condition, setting the Type 1 error rate
+to 10% will increase the power to 88%. If we would perform 2000 studies
+designed with these error rates, we would observe 100 Type 1 errors and
+120 Type 2 errors. The combined error rate across 2000 studies is 220
+instead of 250. In other words, by choosing a more optimal alpha level,
+we can design lines of research more efficiently, because we are less
+likely to make errors in our statistical inferences.
+
+## Balancing Error Rates
+
+You can choose to minimize the combined error rates, but you can also
+decide that it makes most sense to balance the error rates. For example,
+you might think a Type 1 error is just as problematic as a Type 2 error,
+and therefore, you want to design a study that has balanced error rates
+for a smallest effect size of interest (e.g., a 5% Type 1 error rate and
+a 95% Type 2 error rate). The `optimal_alpha` function can either
+minimize errors, or balance them, by specifying an additional argument
+in the function. The default is to minimize error rates, but by adding
+`error = "balance"` an alpha level is calculated so that the Type 1
+error rate equals the Type 2 error rate.
+
+``` r
+res2 <- optimal_alpha(power_function = "pwr.t.test(d=0.5, n=64, sig.level = x, type='two.sample', alternative='two.sided')$power", error = "balance")
+
+res2$alpha
+#> [1] 0.1110824
+res2$beta
+#> [1] 0.1110794
+```
+
+Repeating our earlier example, the alpha level is 11%, and the power is
+89% (or the Type 2 error rate is 11%). Choosing to balance error rates
+is only slightly less efficient (22.22%) compared to minimizing error
+rates (22.13%). Power analysis is always a messy business due to the
+uncertainty in the true effect size, and I would not worry about the
+rather trivial difference between minimal error rates and balanced error
+rates, and the latter seems slightly more intuitive to explain, which
+might give this approach some pracical benefits when we try to teach or
+explain the idea to others.
+
+# Relative costs and prior probabilities
+
+So far we have assumed a Type 1 error and Type 2 error are equally
+problematic. But you might believe Cohen (1988) was right, and Type 1
+errors are exactly 4 times as bad as Type 2 errors. Or you might think
+they are twice as problematic, or 10 times as problematic. However you
+weigh them, as explained by Mudge et al., 2012, and Ulrich & Miller,
+2019, you should incorporate those weights into your decisions.
+
+The function has another optional argument, `costT1T2`, that allows you
+to specify the relative cost of Type1:Type2 errors. By default this is
+set to 1, but you can set it to 4 (or any other value) such that Type 1
+errors are 4 times as costly as Type 2 errors. This will change the
+weight of Type 1 errors compared to Type 2 errors, and thus also the
+choice of the best alpha level.
+
+``` r
+res3 <- optimal_alpha(power_function = "pwr.t.test(d=0.5, n=100, sig.level = x, type='two.sample', alternative='two.sided')$power", error = "minimal", costT1T2 = 4)
+
+res3$alpha
+#> [1] 0.01918735
+res3$beta
+#> [1] 0.1211773
+```
+
+Now, the alpha level that minimized the *weighted* Type 1 and Type 2
+error rates is 2%.
+
+Similarly, you can take into account prior probabilities that either the
+null is true (and you will observe a Type 1 error), or that the
+alternative hypothesis is true (and you will observe a Type 2 error). By
+incorporating these expectations, you can minimize or balance error
+rates in the long run (assuming your priors are correct). Priors can be
+specified using the `prior_H1H0` argument, which by default is 1 (H1 and
+H0 are equally likely). Setting it to 4 means you think the alternative
+hypothesis (and hence, Type 2 errors) are 4 times more likely than that
+the null hypothesis is true (and hence, Type 1 errors).
+
+``` r
+res4 <- optimal_alpha(power_function = "pwr.t.test(d=0.5, n=100, sig.level = x, type='two.sample', alternative='two.sided')$power", error = "minimal", prior_H1H0 = 2)
+
+res4$alpha
+#> [1] 0.07901679
+res4$beta
+#> [1] 0.03875676
+```
+
+If you think H1 is four times more likely to be true than H0, you need
+to worry less about Type 1 errors, and now the alpha that minimizes the
+weighted error rates is 8%. It is always difficult to decide upon priors
+(unless you are Omniscient Jones) but even if you ignore them, you are
+making the decision that H1 and H0 are equally plausible.

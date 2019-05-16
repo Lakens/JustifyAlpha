@@ -1,24 +1,21 @@
 ---
-output: github_document
+title: "Introduction to justifieR"
+author: "Daniel Lakens"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to justifieR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
-)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 library(justifieR)
 library(pwr)
-
 ```
-# justifieR
 
-<!-- badges: start -->
-<!-- badges: end -->
+# An Introduction to justifieR
 
 The goal of justifieR is to provide ways for researchers to justify their alpha level when designing studies. 
 
