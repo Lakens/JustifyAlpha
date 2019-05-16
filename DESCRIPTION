@@ -11,3 +11,13 @@ Description: Functions to justify your alpha level as a function of the sample s
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1
+Imports: 
+    stats
+Suggests: 
+    knitr,
+    rmarkdown,
+    pwr
+VignetteBuilder: 
+    knitr
