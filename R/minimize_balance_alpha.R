@@ -1,7 +1,7 @@
 #' Justify your alpha level by minimizing or balancing Type 1 and Type 2 error rates.
 #' @param power_function Function that outputs the power, calculated with an analytic function.
 #' @param costT1T2 Relative cost of Type 1 errors vs. Type 2 errors.
-#' @param prior_H1H0 How much more likely a-priori is H1 than H0?
+#' @param priorH1H0 How much more likely a-priori is H1 than H0?
 #' @param error Either "minimal" to minimize error rates, or "balance" to balance error rates.
 #' @param verbose Print each iteration of the optimization function if TRUE. Defaults to FALSE.
 #' @return
@@ -21,17 +21,17 @@
 #' @importFrom stats optimize
 #' @export
 #'
-optimal_alpha <- function(power_function, costT1T2 = 1, prior_H1H0 = 1, error = "minimal", verbose = FALSE) {
+optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "minimal", verbose = FALSE) {
   #Define the function to be minimized
-  f = function(x, power_function, costT1T2 = 1, prior_H1H0 = 1, error = "minimal") {
+  f = function(x, power_function, costT1T2 = 1, priorH1H0 = 1, error = "minimal") {
     y <- 1 - eval(parse(text=paste(power_function)))
     if(verbose == TRUE){
       print(c(x, y, x+y)) #optional: print alpha, beta, and objective
     }
     if(error == "balance"){
-      max((costT1T2*x - prior_H1H0*y)/(prior_H1H0+1), (prior_H1H0*y - costT1T2*x)/(prior_H1H0+1))
+      max((costT1T2*x - priorH1H0*y)/(priorH1H0+1), (priorH1H0*y - costT1T2*x)/(priorH1H0+1))
     } else if (error == "minimal"){
-      2*(costT1T2*x + prior_H1H0*y)/(prior_H1H0+1)
+      (costT1T2*x + priorH1H0*y)/(priorH1H0+1)
     }
   }
   #Run optimize to find the minimum
@@ -40,7 +40,7 @@ optimal_alpha <- function(power_function, costT1T2 = 1, prior_H1H0 = 1, error = 
                   tol = 0.00001,
                   power_function = power_function,
                   costT1T2 = costT1T2,
-                  prior_H1H0 = prior_H1H0,
+                  priorH1H0 = priorH1H0,
                   error = error)
   if(error == "balance"){
     beta <- res$minimum - res$objective

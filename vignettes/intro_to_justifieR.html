@@ -12,7 +12,7 @@
 
 <meta name="author" content="Daniel Lakens" />
 
-<meta name="date" content="2019-05-16" />
+<meta name="date" content="2019-06-05" />
 
 <title>Introduction to justifieR</title>
 
@@ -303,7 +303,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Introduction to justifieR</h1>
 <h4 class="author">Daniel Lakens</h4>
-<h4 class="date">2019-05-16</h4>
+<h4 class="date">2019-06-05</h4>
 
 
 
@@ -329,18 +329,38 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## [1] 0.09967892</code></pre>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">res<span class="op">$</span>beta</a></code></pre></div>
 <pre><code>## [1] 0.121652</code></pre>
-<p>If a researcher is interested in effects of d = 0.5, and plans to collect 64 participants in each condition, setting the Type 1 error rate to 10% will increase the power to 88%.</p>
-<p>The code requires requires you to specify the power function (in a way that the code <em>returns</em> the power, hence the $power at the end) for your test, where the significance level is a variable ‘x’. In this power function you specify the effect size (such as the smallest effect size you are interested in) and the sample size. In my experience, sometimes the sample size is determined by factors outside the control of the researcher. For example, you are working with a existing data, or you are studying a sample size that is limited (e.g., all students in a school). Other times, people have a maximum sample size they can feasibly collect, and accept the error rates that follow from this feasibility limitation. If your sample size is not limited, you can increase the sample size until you are happy with the error rates.</p>
-<p>The code calculates the Type 2 error (1-power) across a range of alpha values. For example, we want to calculate the optimal alpha level for a independent <em>t</em>-test. Assume our smallest effect size of interest is d = 0.5, and we are planning to collect 100 participants in each group. We would normally calculate power as follows:</p>
-<p><code>pwr.t.test(d=0.5, n=100, sig.level = 0.05, type=&#39;two.sample&#39;, alternative=&#39;two.sided&#39;)$power</code></p>
-<p>This analysis tells us that we have 94% power with a 5% alpha level for our smallest effect size of interest, d = 0.5, when we collect 100 participants in each condition.</p>
-<p>If we want to minimize our total error rates, we would enter this function in our optimal_alpha function (while replacing the sig.level argument with ‘x’ instead of 0.05, because we are varying the value to determine the lowest combined error rate).</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">res &lt;-<span class="st"> </span><span class="kw">optimal_alpha</span>(<span class="dt">power_function =</span> <span class="st">&quot;pwr.t.test(d=0.5, n=100, sig.level = x, type=&#39;two.sample&#39;, alternative=&#39;two.sided&#39;)$power&quot;</span>)</a>
+<p>If a researcher is interested in effects of d = 0.5, and plans to collect 64 participants in each condition, setting the Type 1 error rate to 10% will increase the power to 88%. If we would perform 2000 studies designed with these error rates, we would observe 100 Type 1 errors and 120 Type 2 errors. The combined error rate across 2000 studies is 220 instead of 250. In other words, by choosing a more optimal alpha level, we can design lines of research more efficiently, because we are less likely to make errors in our statistical inferences.</p>
+<div id="balancing-error-rates" class="section level2">
+<h2>Balancing Error Rates</h2>
+<p>You can choose to minimize the combined error rates, but you can also decide that it makes most sense to balance the error rates. For example, you might think a Type 1 error is just as problematic as a Type 2 error, and therefore, you want to design a study that has balanced error rates for a smallest effect size of interest (e.g., a 5% Type 1 error rate and a 95% Type 2 error rate). The <code>optimal_alpha</code> function can either minimize errors, or balance them, by specifying an additional argument in the function. The default is to minimize error rates, but by adding <code>error = &quot;balance&quot;</code> an alpha level is calculated so that the Type 1 error rate equals the Type 2 error rate.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">res2 &lt;-<span class="st"> </span><span class="kw">optimal_alpha</span>(<span class="dt">power_function =</span> <span class="st">&quot;pwr.t.test(d=0.5, n=64, sig.level = x, type=&#39;two.sample&#39;, alternative=&#39;two.sided&#39;)$power&quot;</span>, <span class="dt">error =</span> <span class="st">&quot;balance&quot;</span>)</a>
 <a class="sourceLine" id="cb6-2" title="2"></a>
-<a class="sourceLine" id="cb6-3" title="3">res<span class="op">$</span>alpha</a></code></pre></div>
-<pre><code>## [1] 0.05101728</code></pre>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">res<span class="op">$</span>beta</a></code></pre></div>
-<pre><code>## [1] 0.05853977</code></pre>
+<a class="sourceLine" id="cb6-3" title="3">res2<span class="op">$</span>alpha</a></code></pre></div>
+<pre><code>## [1] 0.1110824</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">res2<span class="op">$</span>beta</a></code></pre></div>
+<pre><code>## [1] 0.1110794</code></pre>
+<p>Repeating our earlier example, the alpha level is 11%, and the power is 89% (or the Type 2 error rate is 11%). Choosing to balance error rates is only slightly less efficient (22.22%) compared to minimizing error rates (22.13%). Power analysis is always a messy business due to the uncertainty in the true effect size, and I would not worry about the rather trivial difference between minimal error rates and balanced error rates, and the latter seems slightly more intuitive to explain, which might give this approach some practical benefits when we try to teach or explain the idea to others.</p>
+</div>
+</div>
+<div id="relative-costs-and-prior-probabilities" class="section level1">
+<h1>Relative costs and prior probabilities</h1>
+<p>So far we have assumed a Type 1 error and Type 2 error are equally problematic. But you might believe Cohen (1988) was right, and Type 1 errors are exactly 4 times as bad as Type 2 errors. Or you might think they are twice as problematic, or 10 times as problematic. However you weigh them, as explained by Mudge et al., 2012, and Ulrich &amp; Miller, 2019, you should incorporate those weights into your decisions.</p>
+<p>The function has another optional argument, <code>costT1T2</code>, that allows you to specify the relative cost of Type1:Type2 errors. By default this is set to 1, but you can set it to 4 (or any other value) such that Type 1 errors are 4 times as costly as Type 2 errors. This will change the weight of Type 1 errors compared to Type 2 errors, and thus also the choice of the best alpha level.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">res3 &lt;-<span class="st"> </span><span class="kw">optimal_alpha</span>(<span class="dt">power_function =</span> <span class="st">&quot;pwr.t.test(d=0.5, n=100, sig.level = x, type=&#39;two.sample&#39;, alternative=&#39;two.sided&#39;)$power&quot;</span>, <span class="dt">error =</span> <span class="st">&quot;minimal&quot;</span>, <span class="dt">costT1T2 =</span> <span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb10-2" title="2"></a>
+<a class="sourceLine" id="cb10-3" title="3">res3<span class="op">$</span>alpha</a></code></pre></div>
+<pre><code>## [1] 0.01918735</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">res3<span class="op">$</span>beta</a></code></pre></div>
+<pre><code>## [1] 0.1211773</code></pre>
+<p>Now, the alpha level that minimized the <em>weighted</em> Type 1 and Type 2 error rates is 2%.</p>
+<p>Similarly, you can take into account prior probabilities that either the null is true (and you will observe a Type 1 error), or that the alternative hypothesis is true (and you will observe a Type 2 error). By incorporating these expectations, you can minimize or balance error rates in the long run (assuming your priors are correct). Priors can be specified using the <code>priorH1H0</code> argument, which by default is 1 (H1 and H0 are equally likely). Setting it to 4 means you think the alternative hypothesis (and hence, Type 2 errors) are 4 times more likely than that the null hypothesis is true (and hence, Type 1 errors).</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">res4 &lt;-<span class="st"> </span><span class="kw">optimal_alpha</span>(<span class="dt">power_function =</span> <span class="st">&quot;pwr.t.test(d=0.5, n=100, sig.level = x, type=&#39;two.sample&#39;, alternative=&#39;two.sided&#39;)$power&quot;</span>, <span class="dt">error =</span> <span class="st">&quot;minimal&quot;</span>, <span class="dt">priorH1H0 =</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb14-2" title="2"></a>
+<a class="sourceLine" id="cb14-3" title="3">res4<span class="op">$</span>alpha</a></code></pre></div>
+<pre><code>## [1] 0.07901679</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">res4<span class="op">$</span>beta</a></code></pre></div>
+<pre><code>## [1] 0.03875676</code></pre>
+<p>If you think H1 is four times more likely to be true than H0, you need to worry less about Type 1 errors, and now the alpha that minimizes the weighted error rates is 8%. It is always difficult to decide upon priors (unless you are Omniscient Jones) but even if you ignore them, you are making the decision that H1 and H0 are equally plausible.</p>
 </div>
 
 

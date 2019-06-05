@@ -63,7 +63,7 @@ res2$beta
 
 ```
 
-Repeating our earlier example, the alpha level is `r 100*round(res2$alpha,2)`%, and the power is `r 100*round(1-res2$beta,2)`% (or the Type 2 error rate is `r 100*round(res2$beta,2)`%). Choosing to balance error rates is only slightly less efficient (`r 100*round(res2$alpha+res2$beta,4)`%) compared to minimizing error rates (`r 100*round(res$alpha+res$beta,4)`%). Power analysis is always a messy business due to the uncertainty in the true effect size, and I would not worry about the rather trivial difference between minimal error rates and balanced error rates, and the latter seems slightly more intuitive to explain, which might give this approach some pracical benefits when we try to teach or explain the idea to others. 
+Repeating our earlier example, the alpha level is `r 100*round(res2$alpha,2)`%, and the power is `r 100*round(1-res2$beta,2)`% (or the Type 2 error rate is `r 100*round(res2$beta,2)`%). Choosing to balance error rates is only slightly less efficient (`r 100*round(res2$alpha+res2$beta,4)`%) compared to minimizing error rates (`r 100*round(res$alpha+res$beta,4)`%). Power analysis is always a messy business due to the uncertainty in the true effect size, and I would not worry about the rather trivial difference between minimal error rates and balanced error rates, and the latter seems slightly more intuitive to explain, which might give this approach some practical benefits when we try to teach or explain the idea to others. 
 
 # Relative costs and prior probabilities
 
