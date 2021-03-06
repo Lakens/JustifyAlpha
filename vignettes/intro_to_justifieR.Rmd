@@ -11,8 +11,10 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+#if(!require(justifieR)){devtools::install_github("Lakens/justifieR")}
 library(justifieR)
 library(pwr)
+library(ggplot2)
 ```
 
 # An Introduction to justifieR
@@ -89,3 +91,28 @@ res4$beta
 
 If you think H1 is four times more likely to be true than H0, you need to worry less about Type 1 errors, and now the alpha that minimizes the weighted error rates is `r 100*round(res4$alpha,2)`%. It is always difficult to decide upon priors (unless you are Omniscient Jones) but even if you ignore them, you are making the decision that H1 and H0 are equally plausible. 
 
+# Sample Size Justification
+
+So far we have only discussed how to justify the alpha level given a fixed sample size. However, in practice researchers usually want to conduct power analysis. This can be incorporated smoothly when minimizing or balancing error rates. To do so, you simply need to specify the weighted combined error rate you are aiming for and the function `SampleSizeError` will return the sample size as well as the alpha and beta required to achieve the desired weighted combined error rate. 
+
+```{r}
+res5 <- SampleSizeError(power_function = "pwr.t.test(d=0.5, n = i, sig.level = x, type='two.sample', alternative='two.sided')$power", error = "minimal", priorH1H0 = 1)
+
+res5$alpha
+res5$beta
+res5$samplesize
+```
+
+# Avoiding the Lindley Paradox
+
+Sometimes we don't know the prior odds or the effect size of interest. In this case we can justify the alpha level by aiming to avoid the Lindley paradox. The Lindley paradox arises from the difference between error rate control and likelihood ratios in statistics. When the power is high, it is possible that a significant *p*-value is actually more likely to occur under the alternative than under the null hypothesis. This situation is considered the Lindley paradox. `JustifieR` allows to avoid the Lindley paradox by using the functions `ftestEvidence` and `ttestEvidence`, which calculate the alpha level that is needed so that a significance *p*-value is always more likely under the alternative hypothesis than under the null hypothesis. For a two sample *t*-test with 100 participants per group, we can do this using the following function.  
+```{r}
+res6 <- ttestEvidence("lindley", 100, 100)
+```
+This shows that an alpha level of at least `round(res6,3)` would be required to avoid the Lindley paradox. However, we might be even more ambitious in our inference and want the a significant *p*-value to indicate at least moderate evidence for the alternative. This can be achieved as well as follows. 
+
+```{r}
+res7 <- ttestEvidence("moderate", 100, 100)
+```
+
+To achieve at least moderate evidence on a significant *p*-value we would need to use an alpha level of at least `round(res7,3)`.

@@ -1,23 +1,31 @@
 Package: justifieR
 Title: Functions to justify your alpha
-Version: 0.0.0.1
+Version: 0.1
 Authors@R: 
-    person(given = "Daniel",
+    c(person(given = "Daniel",
            family = "Lakens",
            role = c("aut", "cre"),
            email = "D.Lakens@tue.nl",
-           comment = c(ORCID = "0000-0002-0247-239X"))
+           comment = c(ORCID = "0000-0002-0247-239X")),
+    person(given = "Maximilian",
+           family = "Maier",
+           role = c("aut"),
+           email = "maximilianmaier0401@gmail.com"))
 Description: Functions to justify your alpha level as a function of the sample size or by minimizing or balancing error rates.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 Imports: 
-    stats
+    stats,
+    BayesFactor, 
+    ggplot2, 
+    stringr
 Suggests: 
     knitr,
     rmarkdown,
-    pwr
+    pwr,
+    testthat
 VignetteBuilder: 
     knitr
