@@ -7,7 +7,7 @@
 ttestEvidence(evidence, n1, n2 = 0, Cauchy = T)
 }
 \arguments{
-\item{evidence}{Desired level of evidence. "Lindley" to avoid the Lindley Paradox, "moderate" to achieve moderate evidence and "strong" to achieve strong evidence.
+\item{evidence}{Desired level of evidence: "Lindley" to avoid the Lindley Paradox, "moderate" to achieve moderate evidence and "strong" to achieve strong evidence.
 Users that are more familiar with Bayesian statistics can also directly enter their desired Bayes factor.}
 
 \item{n1}{Sample size in Group 1.}
@@ -24,7 +24,7 @@ Justify your alpha level by avoiding the Lindley paradox or aiming for moderate 
 }
 \section{References}{
 
-too be added
+to be added
 }
 
 \examples{

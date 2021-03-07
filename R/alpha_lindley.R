@@ -25,7 +25,7 @@ alpha_t.test_solve <- function(x, n1, n2, evidence, Cauchy){
 }
 
 #' Justify your alpha level by avoiding the Lindley paradox or aiming for moderate or strong evidence when using a t-test.
-#' @param evidence Desired level of evidence. "Lindley" to avoid the Lindley Paradox, "moderate" to achieve moderate evidence and "strong" to achieve strong evidence. 
+#' @param evidence Desired level of evidence: "Lindley" to avoid the Lindley Paradox, "moderate" to achieve moderate evidence and "strong" to achieve strong evidence. 
 #' Users that are more familiar with Bayesian statistics can also directly enter their desired Bayes factor. 
 #' @param n1 Sample size in Group 1.
 #' @param n2 Sample size in Group 2. Leave blank for a one-sample or paired-sample t.test.
@@ -35,7 +35,7 @@ alpha_t.test_solve <- function(x, n1, n2, evidence, Cauchy){
 #' ## Avoid the Lindley paradox for a two sample t-test with 300 participants per condition
 #' ttestEvidence("lindley", 300, 300)
 #' @section References:
-#' too be added
+#' to be added
 #' @importFrom stats optim pf pt
 #' @export
 #'
@@ -88,8 +88,8 @@ alpha_f.test_solve <- function(x, df1, df2, evidence, paired){
   (evidence - bf_bic(x, df1, df2, paired))^2
 }
 
-#' Justify your alpha level by avoiding the Lindley paradox or aiming for moderate or strong evidence when using a t-test.
-#' @param evidence Desired level of evidence. "Lindley" to avoid the Lindley Paradox, "moderate" to achieve moderate evidence and "strong" to achieve strong evidence. 
+#' Justify your alpha level by avoiding the Lindley paradox or aiming for moderate or strong evidence when using anova.
+#' @param evidence Desired level of evidence: "Lindley" to avoid the Lindley Paradox, "moderate" to achieve moderate evidence and "strong" to achieve strong evidence. 
 #' Users that are more familiar with Bayesian statistics can also directly enter their desired Bayes factor. 
 #' @param df1 Numerator degrees of freedom.
 #' @param df2 Denominator degrees of freedom.

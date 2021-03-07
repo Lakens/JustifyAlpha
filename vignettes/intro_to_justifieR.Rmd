@@ -93,10 +93,10 @@ If you think H1 is four times more likely to be true than H0, you need to worry 
 
 # Sample Size Justification
 
-So far we have only discussed how to justify the alpha level given a fixed sample size. However, in practice researchers usually want to conduct power analysis. This can be incorporated smoothly when minimizing or balancing error rates. To do so, you simply need to specify the weighted combined error rate you are aiming for and the function `SampleSizeError` will return the sample size as well as the alpha and beta required to achieve the desired weighted combined error rate. 
+So far we have only discussed how to justify the alpha level given a fixed sample size. However, in practice researchers usually want to conduct power analysis. This can be incorporated smoothly when minimizing or balancing error rates. To do so, you simply need to specify the weighted combined error rate you are aiming for and the function `optimal_sample` will return the sample size as well as the alpha and beta required to achieve the desired weighted combined error rate. 
 
 ```{r}
-res5 <- SampleSizeError(power_function = "pwr.t.test(d=0.5, n = i, sig.level = x, type='two.sample', alternative='two.sided')$power", error = "minimal", priorH1H0 = 1)
+res5 <- optimal_sample(power_function = "pwr.t.test(d=0.5, n = i, sig.level = x, type='two.sample', alternative='two.sided')$power", error = "minimal", priorH1H0 = 1)
 
 res5$alpha
 res5$beta

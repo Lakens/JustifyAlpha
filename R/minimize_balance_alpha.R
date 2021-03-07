@@ -123,7 +123,7 @@ alpha_sample_solve <- function(i, power_function, errorgoal, costT1T2, priorH1H0
 #' @examples
 #' ## Optimize power for a independent t-test, smallest effect of interest
 #' ## d = 0.5, desired weighted combined error rate = 5%
-#' res <- SampleSizeError(power_function = "pwr::pwr.t.test(d = 0.5, n = i, sig.level = x,
+#' res <- optimal_sample(power_function = "pwr::pwr.t.test(d = 0.5, n = i, sig.level = x,
 #' type = 'two.sample', alternative = 'two.sided')$power",errorgoal = 0.05)
 #' res$alpha
 #' res$beta
@@ -134,7 +134,7 @@ alpha_sample_solve <- function(i, power_function, errorgoal, costT1T2, priorH1H0
 #' @importFrom stats optimize
 #' @export
 #'
-SampleSizeError <- function(power_function, errorgoal = 0.05, costT1T2 = 1, priorH1H0 = 1, error = "minimal") {
+optimal_sample <- function(power_function, errorgoal = 0.05, costT1T2 = 1, priorH1H0 = 1, error = "minimal") {
 
   
   samplesize<- optim(20, alpha_sample_solve, lower = 0, upper = Inf, method = "L-BFGS-B",
