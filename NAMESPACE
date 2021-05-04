@@ -3,6 +3,7 @@
 export(ftestEvidence)
 export(optimal_alpha)
 export(optimal_sample)
+export(runApp)
 export(ttestEvidence)
 importFrom(stats,optim)
 importFrom(stats,optimize)

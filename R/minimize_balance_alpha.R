@@ -55,7 +55,6 @@ optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "
   
   
   #Add plot
-  
   alpha_level <- 0
   alpha_list <- numeric(9999)
   beta_list <- numeric(9999)
@@ -82,7 +81,7 @@ optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "
     ggplot2::scale_x_continuous("alpha", seq(0,1,0.1)) +
     ggplot2::scale_y_continuous("weighted combined error rate", seq(0,1,0.1), limits = c(0,1))
   
-  if(printplot == TRUE){
+  if(printplot == TRUE){ 
     print(w_c_alpha_plot)
   }
   

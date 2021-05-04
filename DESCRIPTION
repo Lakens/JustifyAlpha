@@ -21,7 +21,8 @@ Imports:
     stats,
     BayesFactor, 
     ggplot2, 
-    stringr
+    stringr, 
+    shiny
 Suggests: 
     knitr,
     rmarkdown,

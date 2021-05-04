@@ -1,4 +1,5 @@
 
+
 ### t-test ###
 
 ###Compute Bayes Factor for t-statistic and degrees of freedom###

@@ -38,10 +38,19 @@ test_that("check whether calculated error rates match actual ones",{
   n1 <- c(seq(10, 50, 10))
   power_function <- "pwr::pwr.t.test(d = 0.5, n = 50, sig.level = x, type = 'two.sample', alternative = 'two.sided')$power"
   for (k in c(1,3,10)){
-    for (i in 1:length(n1)){
+    for (i in n1){
       res <- optimal_alpha(power_function = paste(stringr::str_replace(power_function, "n = i", paste("n =", i))))
       expect_true(res$errorrate == (1 * res$alpha + 1 * res$beta) / (1 + 1))
     }
-
+  
+  for (odds in c(1, 5, 10)){
+    for(cost in c(1, 3, 10)){
+    for (i in n1){
+      res <- optimal_alpha(power_function = paste(stringr::str_replace(power_function, "n = i", paste("n =", i))), priorH1H0 = odds, costT1T2 = cost)
+      expect_true(res$errorrate == (cost * res$alpha + odds * res$beta) / (odds+ cost))
+    }
+    }  
+  }
+    
   }
 })
