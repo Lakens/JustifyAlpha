@@ -50,10 +50,10 @@ optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "
   } else if (error == "minimal"){
     beta <- res$objective - res$minimum
   }
-  
-  
-  
-  
+
+
+
+
   #Add plot
   alpha_level <- 0
   alpha_list <- numeric(9999)
@@ -68,30 +68,30 @@ optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "
     w_list[i] <- (alpha_level + beta_list[i]) / 2
     w_c_list[i] <- (costT1T2 * alpha_level + priorH1H0 * beta_list[i]) / (costT1T2 + priorH1H0)
   }
-  
+
   x <- res$minimum
-  
+
   # Create dataframe for plotting
   plot_data <- data.frame(alpha_list, beta_list, w_list, w_c_list)
-  
+
   w_c_alpha_plot <- ggplot2::ggplot(ggplot2::aes(x=alpha_list, y=w_c_list), data=plot_data,) +
     ggplot2::geom_line(size = 1.3) +
     ggplot2::geom_point(ggplot2::aes(x = res$minimum, y = (costT1T2 * res$minimum + priorH1H0 * (1 - eval(parse(text=paste(power_function))))) / (priorH1H0 + costT1T2)), color="red", size = 3) +
     ggplot2::theme_minimal(base_size = 18) +
     ggplot2::scale_x_continuous("alpha", seq(0,1,0.1)) +
     ggplot2::scale_y_continuous("weighted combined error rate", seq(0,1,0.1), limits = c(0,1))
-  
-  if(printplot == TRUE){ 
+
+  if(printplot == TRUE){
     print(w_c_alpha_plot)
   }
-  
+
   #Store results
   alpha = res$minimum
   beta = 1 - eval(parse(text=paste(power_function)))
-  
+
   invisible(list(alpha = res$minimum,
                  beta = 1 - eval(parse(text=paste(power_function))),
-                 errorrate = (costT1T2 * alpha + priorH1H0 * beta) / (costT1T2 + priorH1H0), 
+                 errorrate = (costT1T2 * alpha + priorH1H0 * beta) / (costT1T2 + priorH1H0),
                  objective = res$objective,
                  plot_data = plot_data,
                  plot = w_c_alpha_plot
@@ -101,7 +101,7 @@ optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "
 
 
 alpha_sample_solve <- function(i, power_function, errorgoal, costT1T2, priorH1H0, error){
-  
+
   res <- optimal_alpha(power_function = paste(stringr::str_replace(power_function, "n = i", paste("n =", i))), costT1T2 = costT1T2, priorH1H0 = priorH1H0, error = error)
   (errorgoal - res$errorrate)^2
 }
@@ -135,14 +135,14 @@ alpha_sample_solve <- function(i, power_function, errorgoal, costT1T2, priorH1H0
 #'
 optimal_sample <- function(power_function, errorgoal = 0.05, costT1T2 = 1, priorH1H0 = 1, error = "minimal") {
 
-  
+
   samplesize<- optim(20, alpha_sample_solve, lower = 0, upper = Inf, method = "L-BFGS-B",
                   power_function = power_function, errorgoal = errorgoal, costT1T2 = costT1T2, priorH1H0 = priorH1H0, error = error)$par
   samplesize <- ceiling(samplesize)
   res <- optimal_alpha(power_function = paste(stringr::str_replace(power_function, "n = i", paste("n =", samplesize))), costT1T2 = costT1T2, priorH1H0 = priorH1H0, error = error)
   invisible(list(alpha = res$alpha,
                  beta = res$beta,
-                 errorrate = (costT1T2 * res$alpha + priorH1H0 * res$beta) / (costT1T2 + priorH1H0), 
+                 errorrate = (costT1T2 * res$alpha + priorH1H0 * res$beta) / (costT1T2 + priorH1H0),
                  objective = res$objective,
                  samplesize = samplesize
   )
