@@ -22,7 +22,8 @@ Imports:
     BayesFactor, 
     ggplot2, 
     stringr, 
-    shiny
+    shiny, 
+    Superpower
 Suggests: 
     knitr,
     rmarkdown,

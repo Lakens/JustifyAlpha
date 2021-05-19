@@ -52,8 +52,6 @@ optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "
   }
 
 
-
-
   #Add plot
   alpha_level <- 0
   alpha_list <- numeric(9999)
@@ -102,7 +100,7 @@ optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "
 
 alpha_sample_solve <- function(i, power_function, errorgoal, costT1T2, priorH1H0, error){
 
-  res <- optimal_alpha(power_function = paste(stringr::str_replace(power_function, "n = i", paste("n =", i))), costT1T2 = costT1T2, priorH1H0 = priorH1H0, error = error)
+  res <- optimal_alpha(power_function = paste(stringr::str_replace(power_function, "sample_n", as.character(i))), costT1T2 = costT1T2, priorH1H0 = priorH1H0, error = error)
   (errorgoal - res$errorrate)^2
 }
 
@@ -122,7 +120,7 @@ alpha_sample_solve <- function(i, power_function, errorgoal, costT1T2, priorH1H0
 #' @examples
 #' ## Optimize power for a independent t-test, smallest effect of interest
 #' ## d = 0.5, desired weighted combined error rate = 5%
-#' res <- optimal_sample(power_function = "pwr::pwr.t.test(d = 0.5, n = i, sig.level = x,
+#' res <- optimal_sample(power_function = "pwr::pwr.t.test(d = 0.5, n = sample_n, sig.level = x,
 #' type = 'two.sample', alternative = 'two.sided')$power",errorgoal = 0.05)
 #' res$alpha
 #' res$beta
@@ -139,7 +137,7 @@ optimal_sample <- function(power_function, errorgoal = 0.05, costT1T2 = 1, prior
   samplesize<- optim(20, alpha_sample_solve, lower = 0, upper = Inf, method = "L-BFGS-B",
                   power_function = power_function, errorgoal = errorgoal, costT1T2 = costT1T2, priorH1H0 = priorH1H0, error = error)$par
   samplesize <- ceiling(samplesize)
-  res <- optimal_alpha(power_function = paste(stringr::str_replace(power_function, "n = i", paste("n =", samplesize))), costT1T2 = costT1T2, priorH1H0 = priorH1H0, error = error)
+  res <- optimal_alpha(power_function = paste(stringr::str_replace(power_function, "sample_n", as.character(samplesize))), costT1T2 = costT1T2, priorH1H0 = priorH1H0, error = error)
   invisible(list(alpha = res$alpha,
                  beta = res$beta,
                  errorrate = (costT1T2 * res$alpha + priorH1H0 * res$beta) / (costT1T2 + priorH1H0),

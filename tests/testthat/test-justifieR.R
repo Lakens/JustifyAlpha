@@ -25,8 +25,8 @@ test_that("check whether Bayes Factors are calculated correctly for t-tests",{
       alpha <- ttestEvidence(k, n1[i], n2[i])
       expect_equal(k,round(exp(BayesFactor::ttest.tstat(qt((1-alpha/2), n1[i]+n2[i]-2),n1[i],n2[i])$bf), digits = 2))
 
-      alpha <- ttestEvidence(k, n1[i], n2[i], Cauchy = F)
-      expect_equal(k, round(bf_t.test(qt((1-alpha/2), n1[i]+n2[i]-2), n1[i], n2[i], Cauchy = F), digits = 2))
+      alpha <- ttestEvidence(k, n1[i], n2[i])
+      expect_equal(k, round(bf_t.test(qt((1-alpha/2), n1[i]+n2[i]-2), n1[i], n2[i]), digits = 2))
     }
   }
 })

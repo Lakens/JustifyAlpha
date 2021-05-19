@@ -158,14 +158,15 @@ res5$errorrate
 
 If you think H1 is four times more likely to be true than H0, you need to worry less about Type 1 errors, and now the alpha that minimizes the weighted error rates is `r 100*round(res5$alpha,3)`%, with a power of `r 100*round(res5$beta,3)`%. If we would perform 2000 studies designed with these error rates, and we expect H1 is true 4 times as often as H0, then we expect H0 to be true in 20% (or 400) of the studies, and H1 to be true in 80% (or 1600) of the studies (as 1:4 = 20:80 = 400:1600). So, we should expect to observe 0.2 (the prior probability that H0 is true) × 0.246 (the alpha level) × 2000 = 98.4 Type 1 errors, and 0.8 (the prior probability that H1 is true) × 0.0483 (the Type 2 error rate) × 2000 = 77.3 Type 2 errors, for a total of 175.7 errors. Because we expect H1 to be four times as likely as H0, we weigh Type 2 errors for 0.8, and Type 1 errors for 0.2. The weighted combined error rate is (0.2 × 0.246 + 0.8 × 0.0483) = 0.08784.
 
-The decision about priors is always subjective, as is the case in any decision under uncertainty. The more certain you are about auxiliary hypotheses and the stronger the theory, the higher your prior might be that you are right. The more a prediction goes against things we know or expect to be true, the more likely H0 should be. But when designing any study, we need to consider prior probabilities. You always make a choice - even if you choose to assume H0 is equally likely as H1. 
+The decision about priors is always subjective, as is the case in any decision under uncertainty. The more certain you are about auxiliary hypotheses and the stronger the theory, the higher your prior might be that you are right. Also, when you conduct a replication study, the prior probability of the hypothesis should usually be higher than when attempting to find a novel effect. 
+The more a prediction goes against things we know or expect to be true, the more likely H0 should be. But when designing any study, we need to consider prior probabilities. You always make a choice - even if you choose to assume H0 is equally likely as H1. 
 
 # Sample Size Justification
 
 So far we have only discussed how to justify the alpha level given a fixed sample size. However, in practice researchers usually want to conduct power analysis. This can be incorporated smoothly when minimizing or balancing error rates. To do so, you simply need to specify the weighted combined error rate you are aiming for and the function `optimal_sample` will return the sample size as well as the alpha and beta required to achieve the desired weighted combined error rate. 
 
 ```{r optimal sample}
-res6 <- optimal_sample(power_function = "pwr.t.test(d=0.5, n = i, sig.level = x, type='two.sample', alternative='two.sided')$power", 
+res6 <- optimal_sample(power_function = "pwr.t.test(d=0.5, n = sample_n, sig.level = x, type='two.sample', alternative='two.sided')$power", 
                        error = "minimal", 
                        errorgoal = 0.05, 
                        costT1T2 = 1,
@@ -178,7 +179,7 @@ Using the code above, we see that if we aim to achieve a combined error rate of 
 
 # Specifying power functions
 
-So far we have used only one function from the `pwr` package to specify the power function. However, any function can be entered. Below we illustrate some additional approaches. It is important to specify a power function that returns the power, where the alpha level is a variable x, and where the output is a power value between 0 and 1 (e.g., 0.8). Currently, this function only works for functions where the sample size is coded as the variable `n`. 
+So far we have used only one function from the `pwr` package to specify the power function. However, any function can be entered. Below we illustrate some additional approaches. It is important to specify a power function that returns the power, where the alpha level is a variable x, and where the output is a power value between 0 and 1 (e.g., 0.8).  
 
 ```{r power_alt, fig.width=7}
 design_result <- Superpower::ANOVA_design(
@@ -205,6 +206,34 @@ res7$errorrate
 
 
 ```
+
+
+If we want to use the `optimal_sample` function here we need a power function that uses the total n as an input. This can often be achieved by building a small function around the intended power function. For the `optimal_alpha` example in the box before we can do a power analysis as below. 
+
+```{r power_alt, fig.width=7}
+
+#I ran this for two hours but it did not finish - we might need to think about a less computationally demanding example, but I think in theory this is probably how this could be done.
+
+# optimal_sample_Anova <- function(x, n){
+#   design_result <- Superpower::ANOVA_design(
+#   design = "2b",
+#   n = n,
+#   mu = c(0, 0.5),
+#   sd = 1
+# )
+# 
+#   Superpower::power_oneway_between(design_result, alpha_level = x)$power/100
+# }
+# 
+# res8 <- optimal_sample("optimal_sample_Anova(x, n = sample_n)")
+# 
+# res8$samplesize
+# res8$alpha
+# res8$beta
+# res8$errorrate
+
+```
+
 
 # Avoiding the Lindley Paradox
 
@@ -277,15 +306,8 @@ So, as long as the observed *p*-value is smaller than `r round(p[which.min(abs(b
 `JustifieR` allows users to directly compute the p-value that corresponds to allows to avoid the Lindley paradox by using the functions `ftestEvidence` and `ttestEvidence`, which calculate the alpha level that is needed so that a significance *p*-value is always more likely under the alternative hypothesis than under the null hypothesis, based on a specification of a prior for the alternative model. For a two sample *t*-test with 100 participants per group, we can do this using the following function.
 
 ```{r}
-res8 <- ttestEvidence("lindley", 100, 100)
-res8
-```
-
-This shows that an alpha level of at least `r `round(res8,3)` would be required to avoid the Lindley paradox. INstead of the default Cauchy prior, we can also use the Unit information Bayes factor.
-
-```{r}
-res9 <- ttestEvidence("lindley", 100, 100, Cauchy = FALSE)
+res9 <- ttestEvidence("lindley", 100, 100)
 res9
 ```
 
-To prevent Lindley's paradox based on the unit information Bayes factor *p*-value we would need to use an alpha level of at least `r `round(res9,3)`. Of course, researchers can also use an informed prior, or use the likelihood itself (without relying on priors) by specifying the effect size of the alternative hypothesis. There are many approaches to prevent Lindley's paradox. All boil down to lowering the alpha level as a function of the sample size, but they differ slightly the relation between the sample size and the alpha level. 
+This shows that an alpha level of at least `r `round(res8,3)` would be required to avoid the Lindley paradox. I. Of course, researchers can also use an informed prior, or use the the likelihood of the data under the effect size of the alternative hypothesis. There are many approaches to prevent Lindley's paradox. All boil down to lowering the alpha level as a function of the sample size, but they differ slightly the relation between the sample size and the alpha level. 

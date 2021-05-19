@@ -41,7 +41,7 @@ too be added
 \examples{
 ## Optimize power for a independent t-test, smallest effect of interest
 ## d = 0.5, desired weighted combined error rate = 5\%
-res <- optimal_sample(power_function = "pwr::pwr.t.test(d = 0.5, n = i, sig.level = x,
+res <- optimal_sample(power_function = "pwr::pwr.t.test(d = 0.5, n = sample_n, sig.level = x,
 type = 'two.sample', alternative = 'two.sided')$power",errorgoal = 0.05)
 res$alpha
 res$beta
