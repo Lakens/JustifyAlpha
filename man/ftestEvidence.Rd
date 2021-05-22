@@ -4,7 +4,7 @@
 \alias{ftestEvidence}
 \title{Justify your alpha level by avoiding the Lindley paradox or aiming for moderate or strong evidence when using anova.}
 \usage{
-ftestEvidence(evidence, df1, df2, paired = FALSE)
+ftestEvidence(evidence, df1, df2, paired = FALSE, printplot = FALSE)
 }
 \arguments{
 \item{evidence}{Desired level of evidence: "Lindley" to avoid the Lindley Paradox, "moderate" to achieve moderate evidence and "strong" to achieve strong evidence.
@@ -15,6 +15,8 @@ Users that are more familiar with Bayesian statistics can also directly enter th
 \item{df2}{Denominator degrees of freedom.}
 
 \item{paired}{If true a within subjects design is assumed.}
+
+\item{printplot}{If true prints a plot relating Bayes factors and p-values.}
 }
 \value{
 alpha level required for a two-sample t-test.

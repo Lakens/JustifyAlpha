@@ -30,7 +30,7 @@ ui <- dashboardPage(
                   title = "Input parameters and press 'Calculate'",
                   selectInput("error", "Minimize or Balance Error Rates?:",
                               c("Balance" = "balance",
-                                "Minimize" = "minimal"
+                                "Minimize" = "minimize"
                               )),
                   numericInput("costT1T2", "Relative cost Type 1 and Type 2 errors:", 4, min = 0),
                   textOutput("outT1T2"),
@@ -70,7 +70,7 @@ ui <- dashboardPage(
                   title = "Input parameters and press 'Calculate'",
                   selectInput("error2", "Minimize or Balance Error Rates?:",
                               c("Balance" = "balance",
-                                "Minimize" = "minimal"
+                                "Minimize" = "minimize"
                               )),
                   numericInput("costT1T22", "Relative cost Type 1 and Type 2 errors:", 4, min = 0),
                   textOutput("outT1T22"),
@@ -79,13 +79,14 @@ ui <- dashboardPage(
                   textOutput("outH1H02"),
                   br(),
                   numericInput("errorrate2", "Desired Weighted Combined Error Rate", 0.05, min = 0, max = 1),
-                  textAreaInput("power_function2", "Power function:", "pwr::pwr.t.test(d = 0.5, n = i, sig.level = x, type = 'two.sample', alternative = 'two.sided')$power", width = '400px', height = '200px'),
+                  textAreaInput("power_function2", "Power function:", "pwr::pwr.t.test(d = 0.5, n = sample_n, sig.level = x, type = 'two.sample', alternative = 'two.sided')$power", width = '400px', height = '200px'),
                   actionButton("power_start2", "Calculate") 
                 ),
                 infoBoxOutput("alpha1Box2"),
                 infoBoxOutput("beta1Box2"),
                 infoBoxOutput("sampleBox2"),
                 infoBoxOutput("error1Box2"),
+                box(plotOutput("plot2")),
                 box(title = "Explanation",
                     status = "warning", 
                     solidHeader = TRUE, collapsible = TRUE, 
@@ -109,15 +110,20 @@ ui <- dashboardPage(
                   title = "Input parameters",
                   numericInput("n1", "n1", 50, min = 0),
                   numericInput("n2", "n2 (0 for one sample/paired test)", 0, min = 0),
+                  selectInput("one.sided", "One sided or two sided?",  c("two sided" = FALSE,
+                                                                    "one sided" = TRUE)),
                   sliderInput("evidence", "How much more likely should the data at least be under the alternative hypothesis?",
                               min = 1, 
                               max = 10, 
                               value = 3),
+                  numericInput("rscale", "Cauchy scale (advanced)", 0.707, min = 0.1),
                   textOutput("likelyttest"),
-                  br()
-                              ),
-                ),
+                  br(),
+                  actionButton("power_start3", "Calculate")
+                  ),
                 infoBoxOutput("ttestbox"),
+                box(plotOutput("plotttest")),
+                #box(plotOutput("ttestplot")),
                 box(title = "Explanation",
                     status = "warning", 
                     solidHeader = TRUE, collapsible = TRUE, 
@@ -126,9 +132,9 @@ ui <- dashboardPage(
                     "To prevent Lindley's paradox one would need to lower the alpha level as a function of the statistical power. Good (1992) notes: 'we have empirical evidence that sensible P values are related to weights of evidence and, therefore, that P values are not entirely without merit. The real objection to P values is not that they usually are utter nonsense, but rather that they can be highly misleading, especially if the value of N is not also taken into account and is large.' Based on the observation by Jeffrey’s (1939) that, under specific circumstances, the Bayes factor against the null hypothesis is approximately inversely proportional to the square root of N, Good (1982) suggests a standardized p-value to bring p-values in closer relationship with weights of evidence. This formula standardizes the p-value to the evidence against the null hypothesis that would be observed if the standardized p-value was the tail area probability observed in a sample of 100 participants.", tags$br(), tags$br(),
                     "This Shiny app uses the same formula, but calculates the standardized alpha. As the sample size increases beyond N = 100, the alpha level decreases, reflecting the idea that with greater sample sizes, one needs a more stringent alpha level (or a higher level of evidence, in the Bayesian sense)."
                 )
+              )
               ),
-      
-    tabItem(tabName = "anova",
+      tabItem(tabName = "anova",
             fluidRow(
               box(
                 title = "Input parameters",
@@ -143,10 +149,11 @@ ui <- dashboardPage(
                 selectInput("paired", "Within or Between Subjects?",
                             c("within" = TRUE,
                               "between" = FALSE
-                            ))
+                            )), 
+                actionButton("power_start4", "Calculate")
               ),
-            ),
             infoBoxOutput("anovabox"),
+            box(plotOutput("plotanova")),
             box(title = "Explanation",
                 status = "warning", 
                 solidHeader = TRUE, collapsible = TRUE, 
@@ -155,6 +162,7 @@ ui <- dashboardPage(
                 "To prevent Lindley's paradox one would need to lower the alpha level as a function of the statistical power. Good (1992) notes: 'we have empirical evidence that sensible P values are related to weights of evidence and, therefore, that P values are not entirely without merit. The real objection to P values is not that they usually are utter nonsense, but rather that they can be highly misleading, especially if the value of N is not also taken into account and is large.' Based on the observation by Jeffrey’s (1939) that, under specific circumstances, the Bayes factor against the null hypothesis is approximately inversely proportional to the square root of N, Good (1982) suggests a standardized p-value to bring p-values in closer relationship with weights of evidence. This formula standardizes the p-value to the evidence against the null hypothesis that would be observed if the standardized p-value was the tail area probability observed in a sample of 100 participants.", tags$br(), tags$br(),
                 "This Shiny app uses the same formula, but calculates the standardized alpha. As the sample size increases beyond N = 100, the alpha level decreases, reflecting the idea that with greater sample sizes, one needs a more stringent alpha level (or a higher level of evidence, in the Bayesian sense)."
           )
+        )
         ),
       # Third tab content
       tabItem(tabName = "about",
@@ -165,12 +173,14 @@ ui <- dashboardPage(
               h4("For a short introduction in why to lower your alpha level as a function of the sample size, see my ", a("blog post", href="http://daniellakens.blogspot.com/2018/12/testing-whether-observed-data-should.html"), ". For a short introduction on why and how to balance or minimize error rates, see my ", a("other blog post", href="http://daniellakens.blogspot.com/2019/05/justifying-your-alpha-by-minimizing-or.html"),"."),
               h4("Get the code at ", a("GitHub", href="https://github.com/Lakens/JustifieR")),
               h4("The best way to cite this app and the explanations of how to justify alpha levels in practice is through the preprint:"),
-              h4("Lakens, D. (2019). Justify Your Alpha: A Practical Guide.")
+              h4("Maier & Lakens (2021). Justify Your Alpha: A Primer on Two Practical Approaches")
       )
       
     )
 )
 )
+
+
 
 server <- function(input, output) {
   
@@ -218,11 +228,10 @@ server <- function(input, output) {
   
   
   observeEvent(input$power_start, { 
-    
-    error <- input$error
+    error <- isolate(input$error)
     power_function <- isolate(input$power_function)
-    costT1T2 <- input$costT1T2
-    priorH1H0 <- input$priorH1H0
+    costT1T2 <- isolate(input$costT1T2)
+    priorH1H0 <- isolate(input$priorH1H0)
     res <- optimal_alpha(power_function, costT1T2, priorH1H0, error)
     
     beta1 <- round(res$beta, digits = 4)
@@ -235,7 +244,6 @@ server <- function(input, output) {
     # list(alpha1 = format(alpha1, digits = 10, nsmall = 5, scientific = FALSE),
     #      beta1 = format(beta1, digits = 10, nsmall = 5, scientific = FALSE))
     
-
     output$alpha1Box <- renderInfoBox({
       infoBox(
         "Alpha", alpha1,icon = icon("alpha"),
@@ -256,18 +264,21 @@ server <- function(input, output) {
         color = "red"
       )
     })
- 
+    output$plot1 <- renderPlot({
+      res$plot
+    })
+    
   })
   
   observeEvent(input$power_start2, { 
     showModal(modalDialog("Estimating sample size, alpha level, and power. Please be patient, this might take several minutes.", footer=NULL))
-    input$power_start2
-    error2 <- input$error2
-    errorrate2 <- input$errorrate2
+    isolate(input$power_start2)
+    error2 <- isolate(input$error2)
+    errorrate2 <- isolate(input$errorrate2)
     power_function2 <- isolate(input$power_function2)
-    costT1T22 <- input$costT1T22
-    priorH1H02 <- input$priorH1H02
-    res2 <- optimal_sample(power_function2, errorrate2, costT1T22, priorH1H02, error2)
+    costT1T22 <- isolate(input$costT1T22)
+    priorH1H02 <- isolate(input$priorH1H02)
+    res2 <- optimal_sample(power_function2, errorrate2, costT1T22, priorH1H02, error2, printplot = T)
     alpha2 <- round(res2$alpha, digits = 4)
     beta2 <- round(res2$beta, digits = 4)
     errorrates <- round(res2$errorrate, digits = 4)
@@ -300,65 +311,127 @@ server <- function(input, output) {
         color = "yellow"
       )
     })
+    
+    output$plot2 <- renderPlot({
+      res2$plot
+    })
     removeModal()
   })
   # stats <- reactive({
 
   # })
-
+  observeEvent(input$power_start3, {
   
-
-  
-  output$ttestbox <- renderInfoBox({
-    infoBox(
-      "Alpha", paste0(round(ttestEvidence(as.numeric(input$evidence), input$n1, input$n2), digits = 3)),
-      icon = icon("alpha"),
-      color = "purple"
-    )
-  })
-  
-  output$anovabox <- renderInfoBox({
-    infoBox(
-      "Alpha", paste0(round(ftestEvidence(as.numeric(input$evidence2), input$df1, input$df2, input$paired), digits = 3)),
-      icon = icon("alpha"),
-      color = "purple"
-    )
-  })
-  observeEvent(input$power_start,  {
+    evidence <- as.numeric(isolate(input$evidence))
+    n1 <- isolate(input$n1)
+    n2 <- isolate(input$n2)
+    one.sided <- as.logical(isolate(input$one.sided))
+    rscale <- isolate(input$rscale)
     
-    output$plot1 <- renderPlot({
-      power_function <- isolate(input$power_function)
-      costT1T2 <- input$costT1T2
-      priorH1H0 <- input$priorH1H0
-      
-      alpha_level <- 0
-      alpha_list <- numeric(9999)
-      beta_list <- numeric(9999)
-      w_list <- numeric(9999)
-      w_c_list <- numeric(9999)
-      for(i in 1:9999) {
-        alpha_level <- alpha_level + 0.0001
-        alpha_list[i] <- alpha_level
-        x <- alpha_level
-        beta_list[i] <- 1 - eval(parse(text=paste(power_function)))
-        w_list[i] <- (alpha_level + beta_list[i]) / 2
-        w_c_list[i] <- (costT1T2 * alpha_level + priorH1H0 * beta_list[i]) / (costT1T2 + priorH1H0)
-      }
-      
-      # Create dataframe for plotting
-      plot_data <- data.frame(alpha_list, beta_list, w_list, w_c_list)
-      
-      w_c_alpha_plot <- ggplot(data=plot_data, aes(x=alpha_list, y=w_c_list)) +
-        geom_line(size = 1.3) +
-        #geom_point(aes(x = 0.05, y = (costT1T2 * 0.05 + priorH1H0 * (1 - eval(parse(text=paste(power_function))))) / (priorH1H0 + costT1T2)), color="red", size = 3) +
-        theme_minimal(base_size = 18) +
-        scale_x_continuous("alpha", seq(0,1,0.1)) +
-        scale_y_continuous("weighted combined error rate", seq(0,1,0.1), limits = c(0,1))
-      w_c_alpha_plot
-    })
+  output$ttestbox <- renderInfoBox({
+  
+    infoBox(
+      "Alpha", paste0(round(ttestEvidence(as.numeric(evidence), n1, n2, as.logical(one.sided), rscale = rscale), digits = 3)),
+      icon = icon("alpha"),
+      color = "purple"
+    )
   })
   
+  output$plotttest <- renderPlot({
+    #ttestEvidence(as.numeric(input$evidence), input$n1, input$n2, as.logical(input$one.sided), printplot = T)
+
+    
+      
+
+    lindley  <- ttestEvidence(1,   n1, n2 = n2, one.sided, rscale = rscale, printplot =F)
+    moderate <- ttestEvidence(3,   n1, n2 = n2, one.sided, rscale = rscale, printplot =F)
+    strong   <- ttestEvidence(10,  n1, n2 = n2, one.sided, rscale = rscale, printplot =F)
+    indicated <- ttestEvidence(evidence,  n1, n2 = n2, one.sided, rscale = rscale, printplot =F)
+
+    loops <- seq(from = 0, to = 7, by = 0.01)
+    p <- numeric(length(loops))
+    bf <- numeric(length(loops))
+    #d <- numeric(length(loops))
+    tval <- numeric(length(loops))
+    i <- 0
+    for(t in loops){
+      i <- i+1
+      if(one.sided){
+        bf[i] <- exp(BayesFactor::ttest.tstat(t, n1, n2, rscale = rscale, nullInterval = c(0, Inf))$bf)
+        if(n2 != 0){
+          p[i] <- pt(t, ((n1+n2) - 2), lower=FALSE)
+        } else {
+          p[i] <- pt(t, (n1 - 1), lower=FALSE)
+        }
+      } else {
+        bf[i] <- exp(BayesFactor::ttest.tstat(t, n1, n2, rscale = rscale)$bf)
+        if(n2 != 0){
+          p[i] <- 2*pt(t, ((n1+n2) - 2), lower=FALSE)
+        } else {
+          p[i] <- 2*pt(t, (n1 - 1), lower=FALSE)
+        }
+      }
+      tval[i] <- t
+      #d[i] <- t * sqrt((1/n1)+(1/n2))
+    }
+    plot(p, bf, type="l", lty=1, lwd=3, xlim = c(0, max(0.05, lindley)), ylim = c(0.1, 10), axes = F, xlab = "p-value", ylab = "Bayes factor", log = "y")
+    axis(side=1, at = c(0, as.numeric(lindley), as.numeric(moderate), as.numeric(strong), 0.05, indicated), labels = c(0, round(lindley, digits = 3), round(moderate, digits = 3), round(strong, digits = 3), 0.05, round(indicated, digits = 3)),  lwd = 3, las = 3)
+    axis(side=2, at = c(0.1, 0.33, 1, 3, 10), labels = c("1/10", "1/3", 1, 3, 10), lwd = 3)
+    points(indicated, evidence, col = "red", lwd = 4)
+    abline(h = c(0.1, 0.33, 1, 3, 10), col = "gray", lty = 2)
+    abline(v = c(lindley, moderate, strong), lty = 3)
+    abline(v = indicated, lty = 3, col = "red")
+  })
+  })
   
-}
+  observeEvent(input$power_start4, {
+    
+    evidence <- as.numeric(isolate(input$evidence2))
+    df1      <- isolate(input$df1)
+    df2      <- isolate(input$df2)
+    paired   <- isolate(input$paired)  
+    
+  output$anovabox <- renderInfoBox({
+ 
+    infoBox(
+      "Alpha", paste0(round(ftestEvidence(evidence, df1, df2, paired), digits = 3)),
+      icon = icon("alpha"),
+      color = "purple"
+    )
+  })
+  
+  output$plotanova <- renderPlot({
+    lindley  <- ftestEvidence(1, df1, df2, paired, printplot = F)
+    moderate <- ftestEvidence(3, df1, df2, paired, printplot = F)
+    strong   <- ftestEvidence(10, df1, df2, paired, printplot = F)
+    indicated<- ftestEvidence(evidence, df1, df2, paired, printplot = F)
+    
+    loops <- seq(from = 0, to = 100, by = 0.01)
+    p <- numeric(length(loops))
+    bf <- numeric(length(loops))
+    #d <- numeric(length(loops))
+    fval <- numeric(length(loops))
+    i <- 0
+    for(f in loops){
+      i <- i+1
+      bf[i] <- bf_bic(f, df1, df2, paired)
+      p[i] <- (1 - pf(f, df1, df2))
+      fval[i] <- f
+      #d[i] <- t * sqrt((1/n1)+(1/n2))
+    }
+    plot(p, bf, type="l", lty=1, lwd=3, xlim = c(0, max(0.05, lindley)), ylim = c(0.1, 10), axes = F, xlab = "p-value", ylab = "Bayes factor", log = "y")
+    axis(side=1, at = c(0, as.numeric(lindley), as.numeric(moderate), as.numeric(strong), 0.05, indicated), labels = c(0, round(lindley, digits = 3), round(moderate, digits = 3), round(strong, digits = 3), 0.05, round(indicated, digits = 3)),  lwd = 3, las = 3)
+    axis(side=2, at = c(0.1, 0.33, 1, 3, 10), labels = c("1/10", "1/3", 1, 3, 10), lwd = 3)
+    points(indicated, evidence, col = "red", lwd = 4)
+    
+    abline(h = c(0.1, 0.33, 1, 3, 10), col = "gray", lty = 2)
+    abline(v = c(lindley, moderate, strong), lty = 3)
+    abline(v = indicated, lty = 3, col = "red")
+  })
+  })
+  
+}  
+
+
 # Run the application
 shinyApp(ui, server)

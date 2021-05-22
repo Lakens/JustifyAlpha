@@ -8,7 +8,7 @@ optimal_alpha(
   power_function,
   costT1T2 = 1,
   priorH1H0 = 1,
-  error = "minimal",
+  error = "minimize",
   verbose = FALSE,
   printplot = FALSE
 )
@@ -20,7 +20,7 @@ optimal_alpha(
 
 \item{priorH1H0}{How much more likely a-priori is H1 than H0?}
 
-\item{error}{Either "minimal" to minimize error rates, or "balance" to balance error rates.}
+\item{error}{Either "minimize" to minimize error rates, or "balance" to balance error rates.}
 
 \item{verbose}{Print each iteration of the optimization function if TRUE. Defaults to FALSE.}
 

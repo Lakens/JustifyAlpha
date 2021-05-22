@@ -2,7 +2,7 @@
 #' @param power_function Function that outputs the power, calculated with an analytic function.
 #' @param costT1T2 Relative cost of Type 1 errors vs. Type 2 errors.
 #' @param priorH1H0 How much more likely a-priori is H1 than H0?
-#' @param error Either "minimal" to minimize error rates, or "balance" to balance error rates.
+#' @param error Either "minimize" to minimize error rates, or "balance" to balance error rates.
 #' @param verbose Print each iteration of the optimization function if TRUE. Defaults to FALSE.
 #' @param printplot Print a plot to illustrate the alpha level calculation.
 #' @return
@@ -24,16 +24,16 @@
 #' @importFrom stats optimize
 #' @export
 #'
-optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "minimal", verbose = FALSE, printplot = FALSE) {
+optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "minimize", verbose = FALSE, printplot = FALSE) {
   #Define the function to be minimized
-  f = function(x, power_function, costT1T2 = 1, priorH1H0 = 1, error = "minimal") {
+  f = function(x, power_function, costT1T2 = 1, priorH1H0 = 1, error = "minimize") {
     y <- 1 - eval(parse(text=paste(power_function)))
     if(verbose == TRUE){
       print(c(x, y, x+y)) #optional: print alpha, beta, and objective
     }
     if(error == "balance"){
       max((costT1T2 * x - priorH1H0 * y)/(priorH1H0 + costT1T2), (priorH1H0 * y - costT1T2 * x)/(priorH1H0 + costT1T2))
-    } else if (error == "minimal"){
+    } else if (error == "minimize"){
       (costT1T2 * x + priorH1H0 * y)/(priorH1H0 + costT1T2)
     }
   }
@@ -47,7 +47,7 @@ optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "
                          error = error)
   if(error == "balance"){
     beta <- res$minimum - res$objective
-  } else if (error == "minimal"){
+  } else if (error == "minimize"){
     beta <- res$objective - res$minimum
   }
 
@@ -87,65 +87,17 @@ optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "
   alpha = res$minimum
   beta = 1 - eval(parse(text=paste(power_function)))
 
-  invisible(list(alpha = res$minimum,
+list(alpha = res$minimum,
                  beta = 1 - eval(parse(text=paste(power_function))),
                  errorrate = (costT1T2 * alpha + priorH1H0 * beta) / (costT1T2 + priorH1H0),
                  objective = res$objective,
                  plot_data = plot_data,
                  plot = w_c_alpha_plot
   )
-  )
 }
 
 
-alpha_sample_solve <- function(i, power_function, errorgoal, costT1T2, priorH1H0, error){
 
-  res <- optimal_alpha(power_function = paste(stringr::str_replace(power_function, "sample_n", as.character(i))), costT1T2 = costT1T2, priorH1H0 = priorH1H0, error = error)
-  (errorgoal - res$errorrate)^2
-}
-
-#' Justify your alpha level by minimizing or balancing Type 1 and Type 2 error rates.
-#' @param power_function Function that outputs the power, calculated with an analytic function.
-#' @param errorgoal Desired weighted combined error rate
-#' @param costT1T2 Relative cost of Type 1 errors vs. Type 2 errors.
-#' @param priorH1H0 How much more likely a-priori is H1 than H0?
-#' @param error Either "minimal" to minimize error rates, or "balance" to balance error rates.
-#' @return
-#' alpha = alpha or Type 1 error that minimizes or balances combined error rates
-#' beta = beta or Type 2 error that minimizes or balances combined error rates
-#' errorrate = weighted combined error rate
-#' objective = value that is the result of the minimization, either 0 (for balance) or the combined weighted error rates
-#' samplesize = the desired samplesize
-#'
-#' @examples
-#' ## Optimize power for a independent t-test, smallest effect of interest
-#' ## d = 0.5, desired weighted combined error rate = 5%
-#' res <- optimal_sample(power_function = "pwr::pwr.t.test(d = 0.5, n = sample_n, sig.level = x,
-#' type = 'two.sample', alternative = 'two.sided')$power",errorgoal = 0.05)
-#' res$alpha
-#' res$beta
-#' res$errorrate
-#' res$samplesize
-#' @section References:
-#' too be added
-#' @importFrom stats optimize
-#' @export
-#'
-optimal_sample <- function(power_function, errorgoal = 0.05, costT1T2 = 1, priorH1H0 = 1, error = "minimal") {
-
-
-  samplesize<- optim(20, alpha_sample_solve, lower = 0, upper = Inf, method = "L-BFGS-B",
-                  power_function = power_function, errorgoal = errorgoal, costT1T2 = costT1T2, priorH1H0 = priorH1H0, error = error)$par
-  samplesize <- ceiling(samplesize)
-  res <- optimal_alpha(power_function = paste(stringr::str_replace(power_function, "sample_n", as.character(samplesize))), costT1T2 = costT1T2, priorH1H0 = priorH1H0, error = error)
-  invisible(list(alpha = res$alpha,
-                 beta = res$beta,
-                 errorrate = (costT1T2 * res$alpha + priorH1H0 * res$beta) / (costT1T2 + priorH1H0),
-                 objective = res$objective,
-                 samplesize = samplesize
-  )
-  )
-}
 
 
 

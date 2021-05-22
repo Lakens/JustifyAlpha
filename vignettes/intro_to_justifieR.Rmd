@@ -44,11 +44,11 @@ If we design 2000 studies like this, the number of Type 1 and Type 2 errors we m
 
 The goal in Neyman-Pearson hypothesis testing is to control the number of errors we make, as we perform hypothesis tests. Researchers often rely on convention when setting error rates, and there is no special reason to set the Type 1 error rate at 5% and the Type 2 error rate at 20%. Indeed, there might be better choices when designing studies. For example, when collecting 64 participants per condition, we can set the Type 1 and Type 2 error rates in a way that reduced the number of errors we make, such that from the 2000 studies less than 250 studies yield misleading conclusions. 
 
-We can use the *optimal_alpha* function to compute the minimal error rates. The optimal_alpha function takes as input a power function, the relative cost of Type 1 and Type 2 errors (the default is 1, meaning both errors are equally costly), The prior of H1 versus H0 (the default is 1, meaning H1 and H0 are believed to be equally likely), whether to compute the minimal combined error rate ("minimal") or balanced error rates ("balanced"), and whether to provide output for each iteration of the optimization function or not, and a plot or not. An example of the us of the function is provided below:
+We can use the *optimal_alpha* function to compute the minimized error rates. The optimal_alpha function takes as input a power function, the relative cost of Type 1 and Type 2 errors (the default is 1, meaning both errors are equally costly), The prior odds of H1 versus H0 (the default is 1, meaning H1 and H0 are believed to be equally likely). We can convert odds to probabilities by calculating $odds/(1+odds)$. For example, if the prior odds are 1, the prior probability is 1/(1+1) = 0.5. If the prior odds of H1 compared to H0 are 2, the prior probability of H1 is 2/(2+1) = 0.66. Analogous, we can convert from probability to odds by dividing the probability by 1 minus the probability. For example, if the prior probability of H1 is 0.66. The prior odds of H1 compared to H0 are 0.66/(1-0.66) = 2. Apart from the prior odds, we also need to specify whether to compute the minimized combined error rate ("minimize") or balanced error rates ("balanced"), and whether to provide output for each iteration of the optimization function or not, and a plot or not. An example of the us of the function is provided below:
 
-```{r minimal, fig.width = 6}
+```{r minimize, fig.width = 6}
 res1 <- optimal_alpha(power_function = "pwr.t.test(d=0.5, n=64, sig.level = x, type='two.sample', alternative='two.sided')$power",
-              error = "minimal",
+              error = "minimize",
               costT1T2 = 1,
               priorH1H0 = 1,
               verbose = FALSE, 
@@ -64,9 +64,9 @@ The output indicates that given the specific settings (e.g., weighing Type 1 and
 The figure below recreates Figure 2 in Mudge et al, 2012.
 
 ```{r mudgeplot, fig.width = 6}
-resplot1 <- optimal_alpha(power_function = "pwr::pwr.t.test(d = 1, n = 3, sig.level = x, type = 'two.sample', alternative = 'two.sided')$power", error = "minimal", costT1T2 = 1, printplot = FALSE)
-resplot2 <- optimal_alpha(power_function = "pwr::pwr.t.test(d = 1, n = 10, sig.level = x, type = 'two.sample', alternative = 'two.sided')$power", error = "minimal", costT1T2 = 1, printplot = FALSE)
-resplot3 <- optimal_alpha(power_function = "pwr::pwr.t.test(d = 1, n = 30, sig.level = x, type = 'two.sample', alternative = 'two.sided')$power", error = "minimal", costT1T2 = 1, printplot = FALSE)
+resplot1 <- optimal_alpha(power_function = "pwr::pwr.t.test(d = 1, n = 3, sig.level = x, type = 'two.sample', alternative = 'two.sided')$power", error = "minimize", costT1T2 = 1, printplot = FALSE)
+resplot2 <- optimal_alpha(power_function = "pwr::pwr.t.test(d = 1, n = 10, sig.level = x, type = 'two.sample', alternative = 'two.sided')$power", error = "minimize", costT1T2 = 1, printplot = FALSE)
+resplot3 <- optimal_alpha(power_function = "pwr::pwr.t.test(d = 1, n = 30, sig.level = x, type = 'two.sample', alternative = 'two.sided')$power", error = "minimize", costT1T2 = 1, printplot = FALSE)
 
 plot_data <- rbind(resplot1$plot_data, resplot2$plot_data, resplot3$plot_data)
 plot_data$n <- as.factor(rep(c(3, 10, 30), each = 9999))
@@ -106,9 +106,9 @@ This balances the Type 1 and Type 2 error rates (with a maximum difference betwe
 
 So far we have assumed a Type 1 error and Type 2 error are equally costly. This means that we consider the consequences of a false positive just as bad as the consequences of a false negative. This is not the default in psychology, where researchers typically treat Type 1 errors as 4 times as bad as Type 2 errors. This is based on Cohen (1988), who proposed to aim for 80% power, because we use an alpha of 5%. The `optimal_alpha` function users to set the relative cost of Type 1 and Type 2 errors, `costT1T2`. By default this parameter is set to 1, meaning both types of errors are weighed equally. Changing the value to 4 means that Type 1 errors are weighed 4 times as much as Type 2 errors, or 4:1. This will change the weight of Type 1 errors compared to Type 2 errors, and thus also the alpha level at which combined costs of Type 1 and Type 2 errors are minimized. 
 
-```{r cost minimal, fig.width = 6}
+```{r cost minimize, fig.width = 6}
 res3 <- optimal_alpha(power_function = "pwr.t.test(d=0.5, n=64, sig.level = x, type='two.sample', alternative='two.sided')$power",
-              error = "minimal",
+              error = "minimize",
               costT1T2 = 4,
               priorH1H0 = 1,
               verbose = FALSE, 
@@ -145,7 +145,7 @@ So far, we have assumed that H0 and H1 are equally likely. We can change the pri
 
 ```{r prior, fig.width = 6}
 res5 <- optimal_alpha(power_function = "pwr.t.test(d=0.5, n=64, sig.level = x, type='two.sample', alternative='two.sided')$power",
-              error = "minimal",
+              error = "minimize",
               costT1T2 = 1,
               priorH1H0 = 4,
               verbose = FALSE, 
@@ -167,7 +167,7 @@ So far we have only discussed how to justify the alpha level given a fixed sampl
 
 ```{r optimal sample}
 res6 <- optimal_sample(power_function = "pwr.t.test(d=0.5, n = sample_n, sig.level = x, type='two.sample', alternative='two.sided')$power", 
-                       error = "minimal", 
+                       error = "minimize", 
                        errorgoal = 0.05, 
                        costT1T2 = 1,
                        priorH1H0 = 1)
@@ -194,7 +194,7 @@ Superpower::power_oneway_between(design_result, alpha_level = 0.05)$power/100
 pwr.t.test(d=0.5, n=64, sig.level = 0.05, type='two.sample', alternative='two.sided')$power
 
 res7 <- justifieR::optimal_alpha(power_function = "Superpower::power_oneway_between(design_result, alpha_level = x)$power/100",
-              error = "minimal",
+              error = "minimize",
               costT1T2 = 1,
               priorH1H0 = 1)
 
@@ -210,7 +210,7 @@ res7$errorrate
 
 If we want to use the `optimal_sample` function here we need a power function that uses the total n as an input. This can often be achieved by building a small function around the intended power function. For the `optimal_alpha` example in the box before we can do a power analysis as below. 
 
-```{r power_alt, fig.width=7}
+```{r power_bla, fig.width=7}
 
 #I ran this for two hours but it did not finish - we might need to think about a less computationally demanding example, but I think in theory this is probably how this could be done.
 

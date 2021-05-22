@@ -4,7 +4,14 @@
 \alias{ttestEvidence}
 \title{Justify your alpha level by avoiding the Lindley paradox or aiming for moderate or strong evidence when using a t-test.}
 \usage{
-ttestEvidence(evidence, n1, n2 = 0, one.sided = F, rscale = sqrt(2)/2)
+ttestEvidence(
+  evidence,
+  n1,
+  n2 = 0,
+  one.sided = F,
+  rscale = sqrt(2)/2,
+  printplot = F
+)
 }
 \arguments{
 \item{evidence}{Desired level of evidence: "Lindley" to avoid the Lindley Paradox, "moderate" to achieve moderate evidence and "strong" to achieve strong evidence.
@@ -17,6 +24,8 @@ Users that are more familiar with Bayesian statistics can also directly enter th
 \item{one.sided}{Indicates whether the test is one sided or two sided.}
 
 \item{rscale}{Scale of the Cauchy prior}
+
+\item{printplot}{If true prints a plot relating Bayes factors and p-values.}
 }
 \value{
 alpha level required for a two-sample t-test.
