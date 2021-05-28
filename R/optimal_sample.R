@@ -12,11 +12,11 @@ alpha_sample_solve <- function(i, power_function, errorgoal, costT1T2, priorH1H0
 #' @param error Either "minimize" to minimize error rates, or "balance" to balance error rates.
 #' @param printplot Print a plot to illustrate the alpha level calculation. This will make the function considerably slower.
 #' @return
-#' alpha = alpha or Type 1 error that minimizes or balances combined error rates
-#' beta = beta or Type 2 error that minimizes or balances combined error rates
-#' errorrate = weighted combined error rate
-#' objective = value that is the result of the minimization, either 0 (for balance) or the combined weighted error rates
-#' samplesize = the desired samplesize
+#' alpha = alpha or Type 1 error that minimizes or balances combined error rates,
+#' beta = beta or Type 2 error that minimizes or balances combined error rates,
+#' errorrate = weighted combined error rate,
+#' objective = value that is the result of the minimization, either 0 (for balance) or the combined weighted error rates,
+#' samplesize = the desired samplesize.
 #'
 #' @examples
 #' ## Optimize power for a independent t-test, smallest effect of interest
@@ -28,7 +28,7 @@ alpha_sample_solve <- function(i, power_function, errorgoal, costT1T2, priorH1H0
 #' res$errorrate
 #' res$samplesize
 #' @section References:
-#' too be added
+#' Maier & Lakens (2021). Justify Your Alpha: A Primer on Two Practical Approaches
 #' @importFrom stats optimize
 #' @export
 #'
@@ -45,7 +45,7 @@ optimal_sample <- function(power_function, errorgoal = 0.05, costT1T2 = 1, prior
     Error <-c()
     Samplesize<- c()
 
-    for (i in seq(5, (round(samplesize, digits = -1) + 20), 5)) {
+    for (i in seq(10, (round(samplesize, digits = -1) + 20), 5)) {
     res <- optimal_alpha(power_function = paste(stringr::str_replace(power_function, "sample_n", as.character(i))), costT1T2 = costT1T2, priorH1H0 = priorH1H0, error = error)
     alphas <- c(alphas, res$alpha)
     betas <- c(betas, res$beta)
@@ -86,12 +86,21 @@ optimal_sample <- function(power_function, errorgoal = 0.05, costT1T2 = 1, prior
     
   }
   
+  if(printplot){
   list(alpha = result$alpha,
                  beta = result$beta,
                  errorrate = (costT1T2 * result$alpha + priorH1H0 * result$beta) / (costT1T2 + priorH1H0),
                  objective = result$objective,
                  samplesize = samplesize, 
-                  plot = plot
+                plot = plot
   )
+  } else {
+    list(alpha = result$alpha,
+         beta = result$beta,
+         errorrate = (costT1T2 * result$alpha + priorH1H0 * result$beta) / (costT1T2 + priorH1H0),
+         objective = result$objective,
+         samplesize = samplesize
+         ) 
+  }
 }
 

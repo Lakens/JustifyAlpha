@@ -35,7 +35,7 @@ Justify your alpha level by avoiding the Lindley paradox or aiming for moderate 
 }
 \section{References}{
 
-to be added
+Maier & Lakens (2021). Justify Your Alpha: A Primer on Two Practical Approaches
 }
 
 \examples{

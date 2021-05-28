@@ -27,17 +27,17 @@ optimal_alpha(
 \item{printplot}{Print a plot to illustrate the alpha level calculation.}
 }
 \value{
-alpha = alpha or Type 1 error that minimizes or balances combined error rates
-beta = beta or Type 2 error that minimizes or balances combined error rates
-errorate = weighted combined error rate
-objective = value that is the result of the minimization, either 0 (for balance) or the combined weighted error rates
+alpha = alpha or Type 1 error that minimizes or balances combined error rates,
+beta = beta or Type 2 error that minimizes or balances combined error rates,
+errorate = weighted combined error rate,
+objective = value that is the result of the minimization, either 0 (for balance) or the combined weighted error rates.
 }
 \description{
 Justify your alpha level by minimizing or balancing Type 1 and Type 2 error rates.
 }
 \section{References}{
 
-too be added
+Maier & Lakens (2021). Justify Your Alpha: A Primer on Two Practical Approaches
 }
 
 \examples{

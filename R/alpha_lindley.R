@@ -1,5 +1,3 @@
-
-
 ### t-test ###
 
 ###Compute Bayes Factor for t-statistic and degrees of freedom###
@@ -42,8 +40,10 @@ alpha_t.test_solve <- function(x, n1, n2, evidence, rscale, one.sided){
 #' ## Avoid the Lindley paradox for a two sample t-test with 300 participants per condition
 #' ttestEvidence("lindley", 300, 300)
 #' @section References:
-#' to be added
+#' Maier & Lakens (2021). Justify Your Alpha: A Primer on Two Practical Approaches
 #' @importFrom stats optim pf pt
+#' @importFrom grDevices recordPlot
+#' @importFrom graphics abline axis points
 #' @export
 #'
 ttestEvidence <- function(evidence, n1, n2 = 0, one.sided = F, rscale = sqrt(2)/2, printplot = F) {
@@ -63,7 +63,7 @@ ttestEvidence <- function(evidence, n1, n2 = 0, one.sided = F, rscale = sqrt(2)/
   else  {
     df = n1 -1
   }
-  
+  ##optimize to find alpha level
   crit_t <- optim(1.96, alpha_t.test_solve, lower = 0, upper = Inf, method = "L-BFGS-B",
                   n1 = n1, n2 = n2, evidence = evidence, rscale = rscale, one.sided = one.sided)$par
   if (!one.sided){
@@ -72,17 +72,17 @@ ttestEvidence <- function(evidence, n1, n2 = 0, one.sided = F, rscale = sqrt(2)/
     alpha <- (1 - pt(crit_t, df))
   }
   
+  ##make plot
   if(printplot){
   
-  lindley  <- ttestEvidence(1,   n1, n2 = n2, one.sided, rscale = rscale, printplot =F)
-  moderate <- ttestEvidence(3,   n1, n2 = n2, one.sided, rscale = rscale, printplot =F)
-  strong   <- ttestEvidence(10,  n1, n2 = n2, one.sided, rscale = rscale, printplot =F)
-  indicated <- ttestEvidence(evidence,  n1, n2 = n2, one.sided, rscale = rscale, printplot =F)
+  lindley  <- ttestEvidence(1,   n1, n2 = n2, one.sided, rscale = rscale, printplot =F)[[1]]
+  moderate <- ttestEvidence(3,   n1, n2 = n2, one.sided, rscale = rscale, printplot =F)[[1]]
+  strong   <- ttestEvidence(10,  n1, n2 = n2, one.sided, rscale = rscale, printplot =F)[[1]]
+  indicated <- ttestEvidence(evidence,  n1, n2 = n2, one.sided, rscale = rscale, printplot =F)[[1]]
   
   loops <- seq(from = 0, to = 7, by = 0.01)
   p <- numeric(length(loops))
   bf <- numeric(length(loops))
-  #d <- numeric(length(loops))
   tval <- numeric(length(loops))
   i <- 0
   for(t in loops){
@@ -90,22 +90,21 @@ ttestEvidence <- function(evidence, n1, n2 = 0, one.sided = F, rscale = sqrt(2)/
     if(one.sided){
       bf[i] <- exp(BayesFactor::ttest.tstat(t, n1, n2, rscale = rscale, nullInterval = c(0, Inf))$bf)
       if(n2 != 0){
-        p[i] <- pt(t, ((n1+n2) - 2), lower=FALSE)
+        p[i] <- pt(t, ((n1+n2) - 2), lower.tail=FALSE)
       } else {
-        p[i] <- pt(t, (n1 - 1), lower=FALSE)
+        p[i] <- pt(t, (n1 - 1), lower.tail=FALSE)
       }
     } else {
       bf[i] <- exp(BayesFactor::ttest.tstat(t, n1, n2, rscale = rscale)$bf)
       if(n2 != 0){
-        p[i] <- 2*pt(t, ((n1+n2) - 2), lower=FALSE)
+        p[i] <- 2*pt(t, ((n1+n2) - 2), lower.tail=FALSE)
         } else {
-        p[i] <- 2*pt(t, (n1 - 1), lower=FALSE)
+        p[i] <- 2*pt(t, (n1 - 1), lower.tail=FALSE)
         }
     }
     tval[i] <- t
-    #d[i] <- t * sqrt((1/n1)+(1/n2))
   }
-  plot(p, bf, type="l", lty=1, lwd=3, xlim = c(0, max(0.05, lindley)), ylim = c(0.1, 10), axes = F, xlab = "p-value", ylab = "Bayes factor", log = "y")
+  plot(p, bf, type="l", lty=1, lwd=3, xlim = c(0, max(c(0.05, lindley))), ylim = c(0.1, 10), axes = F, xlab = "p-value", ylab = "Bayes factor", log = "y")
   axis(side=1, at = c(0, as.numeric(lindley), as.numeric(moderate), as.numeric(strong), 0.05, indicated), labels = c(0, round(lindley, digits = 3), round(moderate, digits = 3), round(strong, digits = 3), 0.05, round(indicated, digits = 3)),  lwd = 3, las = 3)
   axis(side=2, at = c(0.1, 0.33, 1, 3, 10), labels = c("1/10", "1/3", 1, 3, 10), lwd = 3)
   points(indicated, evidence, col = "red", lwd = 4)
@@ -113,9 +112,16 @@ ttestEvidence <- function(evidence, n1, n2 = 0, one.sided = F, rscale = sqrt(2)/
   abline(h = c(0.1, 0.33, 1, 3, 10), col = "gray", lty = 2)
   abline(v = c(lindley, moderate, strong), lty = 3)
   abline(v = indicated, lty = 3, col = "red")
-
+  plot <- recordPlot()
   }
-  return(alpha)
+  if(printplot){
+    return(list(alpha = alpha, 
+                evidence = evidence, 
+                plot = plot))
+  } else {
+    return(list(alpha = alpha, 
+                evidence = evidence))
+  }
 }
 
 ### anova ###
@@ -154,9 +160,11 @@ alpha_f.test_solve <- function(x, df1, df2, evidence, paired){
 #' ## Avoid the Lindley paradox for an anova with 1 numerator and 248 denominator degrees of freedom.
 #' ftestEvidence("lindley", 1, 248)
 #' @section References:
-#' too be added
+#' Maier & Lakens (2021). Justify Your Alpha: A Primer on Two Practical Approaches
 #' @export
 #' @importFrom stats optim pf pt
+#' @importFrom grDevices recordPlot
+#' @importFrom graphics abline axis points
 #'
 ftestEvidence <- function(evidence, df1, df2, paired = FALSE, printplot = FALSE){
   
@@ -170,21 +178,22 @@ ftestEvidence <- function(evidence, df1, df2, paired = FALSE, printplot = FALSE)
     evidence = 10
   }
   
+  ##optim to find alpha level for evidence
   crit_f <- optim(5, alpha_f.test_solve, lower = 0, upper = Inf, method = "L-BFGS-B", control = list(maxit = 100000), 
                   df1 = df1, df2 = df2, evidence = evidence, paired = paired)$par
   alpha <- (1 - pf(crit_f, df1, df2))
   
+  #make plot and store in output
   if(printplot){
     
-    lindley  <- ftestEvidence(1, df1, df2, paired, printplot = F)
-    moderate <- ftestEvidence(3, df1, df2, paired, printplot = F)
-    strong   <- ftestEvidence(10, df1, df2, paired, printplot = F)
-    indicated <- ftestEvidence(evidence, df1, df2, paired, printplot = F)
+    lindley  <- ftestEvidence(1, df1, df2, paired, printplot = F)[[1]]
+    moderate <- ftestEvidence(3, df1, df2, paired, printplot = F)[[1]]
+    strong   <- ftestEvidence(10, df1, df2, paired, printplot = F)[[1]]
+    indicated <- ftestEvidence(evidence, df1, df2, paired, printplot = F)[[1]]
     
     loops <- seq(from = 0, to = 100, by = 0.01)
     p <- numeric(length(loops))
     bf <- numeric(length(loops))
-    #d <- numeric(length(loops))
     fval <- numeric(length(loops))
     i <- 0
     for(f in loops){
@@ -192,19 +201,23 @@ ftestEvidence <- function(evidence, df1, df2, paired = FALSE, printplot = FALSE)
       bf[i] <- bf_bic(f, df1, df2, paired)
       p[i] <- (1 - pf(f, df1, df2))
       fval[i] <- f
-      #d[i] <- t * sqrt((1/n1)+(1/n2))
     }
-    plot(p, bf, type="l", lty=1, lwd=3, xlim = c(0, max(0.05, lindley)), ylim = c(0.1, 10), axes = F, xlab = "p-value", ylab = "Bayes factor", log = "y")
+    plot(p, bf, type="l", lty=1, lwd=3, xlim = c(0, max(c(0.05, lindley))), ylim = c(0.1, 10), axes = F, xlab = "p-value", ylab = "Bayes factor", log = "y")
     axis(side=1, at = c(0, as.numeric(lindley), as.numeric(moderate), as.numeric(strong), 0.05, indicated), labels = c(0, round(lindley, digits = 3), round(moderate, digits = 3), round(strong, digits = 3), 0.05, round(indicated, digits = 3)),  lwd = 3, las = 3)
     axis(side=2, at = c(0.1, 0.33, 1, 3, 10), labels = c("1/10", "1/3", 1, 3, 10), lwd = 3)
     points(indicated, evidence, col = "red", lwd = 4)
-    
     abline(h = c(0.1, 0.33, 1, 3, 10), col = "gray", lty = 2)
     abline(v = c(lindley, moderate, strong), lty = 3)
     abline(v = indicated, lty = 3, col = "red")
-    
+    plot <- recordPlot()
+    }
+  if(printplot){
+      return(list(alpha = alpha, 
+              evidence = evidence, 
+              plot = plot))
+  } else {
+      return(list(alpha = alpha, 
+              evidence = evidence))
   }
-  
-  return(alpha)
 }
 

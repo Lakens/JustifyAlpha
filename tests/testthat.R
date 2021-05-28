@@ -1,4 +1,4 @@
 library(testthat)
-library(justifieR)
+library(JustifyAlpha)
 
-test_check("justifieR")
+test_check("JustifyAlpha")
