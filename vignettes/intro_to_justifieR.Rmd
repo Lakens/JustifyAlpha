@@ -1,10 +1,10 @@
 ---
-title: "Introduction to justifieR"
-author: "Daniel Lakens"
+title: "Introduction to JustifyAlpha"
+author: "Daniel Lakens & Maximilian Maier"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction to justifieR}
+  %\VignetteIndexEntry{Introduction to JustifyAlpha}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -13,8 +13,8 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-#if(!require(justifieR)){devtools::install_github("Lakens/justifieR")}
-library(justifieR)
+#if(!require(JustifyAlpha)){devtools::install_github("Lakens/JustifyAlpha")}
+library(JustifyAlpha)
 library(pwr)
 library(ggplot2)
 
@@ -22,14 +22,14 @@ library(ggplot2)
 
 # Vignette Accompanying "Justify Your Alpha: A Primer on Two Practical Approaches"
 
-The goal of justifieR is to provide ways for researchers to justify their alpha level when designing studies. Two approaches are currently implemented. The first function *optimal_alpha* allows users to computed balanced or minimized Type 1 and Type 2 error rates. The second approach uses the function *ttestEvidence* or *ftestEvidence* to lower the alpha level as a function of the sample size to prevent Lindley's paradox. 
+The goal of JustifyAlpha is to provide ways for researchers to justify their alpha level when designing studies. Two approaches are currently implemented. The first function *optimal_alpha* allows users to computed balanced or minimized Type 1 and Type 2 error rates. The second approach uses the function *ttestEvidence* or *ftestEvidence* to lower the alpha level as a function of the sample size to prevent Lindley's paradox. 
 
 ## Installation
 
-You can install the released version of justifieR from [GitHub](https://github.com/Lakens/justifieR) with:
+You can install the released version of JustifyAlpha from [GitHub](https://github.com/Lakens/JustifyAlpha) with:
 
 ``` r
-devtools::install_github("Lakens/justifieR")
+devtools::install_github("Lakens/JustifyAlpha")
 ```
 
 # Minimizing Error Rates
@@ -193,7 +193,7 @@ Superpower::ANOVA_exact(design_result, alpha_level = 0.05, verbose = FALSE)$main
 Superpower::power_oneway_between(design_result, alpha_level = 0.05)$power/100
 pwr.t.test(d=0.5, n=64, sig.level = 0.05, type='two.sample', alternative='two.sided')$power
 
-res7 <- justifieR::optimal_alpha(power_function = "Superpower::power_oneway_between(design_result, alpha_level = x)$power/100",
+res7 <- JustifyAlpha::optimal_alpha(power_function = "Superpower::power_oneway_between(design_result, alpha_level = x)$power/100",
               error = "minimize",
               costT1T2 = 1,
               priorH1H0 = 1)
@@ -204,33 +204,6 @@ res7$errorrate
 
 
 
-
-```
-
-
-If we want to use the `optimal_sample` function here we need a power function that uses the total n as an input. This can often be achieved by building a small function around the intended power function. For the `optimal_alpha` example in the box before we can do a power analysis as below. 
-
-```{r power_bla, fig.width=7}
-
-#I ran this for two hours but it did not finish - we might need to think about a less computationally demanding example, but I think in theory this is probably how this could be done.
-
-# optimal_sample_Anova <- function(x, n){
-#   design_result <- Superpower::ANOVA_design(
-#   design = "2b",
-#   n = n,
-#   mu = c(0, 0.5),
-#   sd = 1
-# )
-# 
-#   Superpower::power_oneway_between(design_result, alpha_level = x)$power/100
-# }
-# 
-# res8 <- optimal_sample("optimal_sample_Anova(x, n = sample_n)")
-# 
-# res8$samplesize
-# res8$alpha
-# res8$beta
-# res8$errorrate
 
 ```
 
@@ -303,10 +276,10 @@ p[which.min(abs(bf-1))]
 
 So, as long as the observed *p*-value is smaller than `r round(p[which.min(abs(bf-1))], 3)` the data will provide stronger support for H1 than for H0.  
 
-`JustifieR` allows users to directly compute the p-value that corresponds to allows to avoid the Lindley paradox by using the functions `ftestEvidence` and `ttestEvidence`, which calculate the alpha level that is needed so that a significance *p*-value is always more likely under the alternative hypothesis than under the null hypothesis, based on a specification of a prior for the alternative model. For a two sample *t*-test with 100 participants per group, we can do this using the following function.
+`JustifyAlpha` allows users to directly compute the p-value that corresponds to allows to avoid the Lindley paradox by using the functions `ftestEvidence` and `ttestEvidence`, which calculate the alpha level that is needed so that a significance *p*-value is always more likely under the alternative hypothesis than under the null hypothesis, based on a specification of a prior for the alternative model. For a two sample *t*-test with 100 participants per group, we can do this using the following function.
 
 ```{r}
-res9 <- ttestEvidence("lindley", 100, 100)
+res9 <- ttestEvidence("lindley", 100, 100)[[1]]
 res9
 ```
 

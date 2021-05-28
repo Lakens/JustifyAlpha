@@ -6,10 +6,10 @@
 #' @param verbose Print each iteration of the optimization function if TRUE. Defaults to FALSE.
 #' @param printplot Print a plot to illustrate the alpha level calculation.
 #' @return
-#' alpha = alpha or Type 1 error that minimizes or balances combined error rates
-#' beta = beta or Type 2 error that minimizes or balances combined error rates
-#' errorate = weighted combined error rate
-#' objective = value that is the result of the minimization, either 0 (for balance) or the combined weighted error rates
+#' alpha = alpha or Type 1 error that minimizes or balances combined error rates,
+#' beta = beta or Type 2 error that minimizes or balances combined error rates,
+#' errorate = weighted combined error rate,
+#' objective = value that is the result of the minimization, either 0 (for balance) or the combined weighted error rates.
 #'
 #' @examples
 #' ## Optimize power for a independent t-test, smallest effect of interest
@@ -20,7 +20,7 @@
 #' res$beta
 #' res$errorate
 #' @section References:
-#' too be added
+#' Maier & Lakens (2021). Justify Your Alpha: A Primer on Two Practical Approaches
 #' @importFrom stats optimize
 #' @export
 #'
@@ -51,7 +51,6 @@ optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "
     beta <- res$objective - res$minimum
   }
 
-
   #Add plot
   alpha_level <- 0
   alpha_list <- numeric(9999)
@@ -79,21 +78,19 @@ optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "
     ggplot2::scale_x_continuous("alpha", seq(0,1,0.1)) +
     ggplot2::scale_y_continuous("weighted combined error rate", seq(0,1,0.1), limits = c(0,1))
 
-  if(printplot == TRUE){
-    print(w_c_alpha_plot)
-  }
-
   #Store results
   alpha = res$minimum
   beta = 1 - eval(parse(text=paste(power_function)))
-
-list(alpha = res$minimum,
+  if(printplot){
+    print(w_c_alpha_plot)
+  }
+      list(alpha = res$minimum,
                  beta = 1 - eval(parse(text=paste(power_function))),
                  errorrate = (costT1T2 * alpha + priorH1H0 * beta) / (costT1T2 + priorH1H0),
                  objective = res$objective,
                  plot_data = plot_data,
-                 plot = w_c_alpha_plot
-  )
+                 plot = w_c_alpha_plot)
+
 }
 
 

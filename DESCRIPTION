@@ -1,16 +1,17 @@
-Package: justifieR
+Package: JustifyAlpha
 Title: Functions to justify your alpha
 Version: 0.1
 Authors@R: 
-    c(person(given = "Daniel",
-           family = "Lakens",
-           role = c("aut", "cre"),
-           email = "D.Lakens@tue.nl",
-           comment = c(ORCID = "0000-0002-0247-239X")),
-    person(given = "Maximilian",
+    c(person(given = "Maximilian",
            family = "Maier",
+           role = c("aut", "cre"),
+           email = "maximilianmaier0401@gmail.com"),
+    person(given = "Daniel",
+           family = "Lakens",
            role = c("aut"),
-           email = "maximilianmaier0401@gmail.com"))
+           email = "D.Lakens@tue.nl",
+           comment = c(ORCID = "0000-0002-0247-239X"))
+    )
 Description: Functions to justify your alpha level as a function of the sample size or by minimizing or balancing error rates.
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -23,11 +24,13 @@ Imports:
     ggplot2, 
     stringr, 
     shiny, 
-    Superpower
+    Superpower, 
+    pwr,
+    shinydashboard,
+    shinycssloaders
 Suggests: 
     knitr,
     rmarkdown,
-    pwr,
     testthat
 VignetteBuilder: 
     knitr

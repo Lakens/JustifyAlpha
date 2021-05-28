@@ -27,18 +27,18 @@ optimal_sample(
 \item{printplot}{Print a plot to illustrate the alpha level calculation. This will make the function considerably slower.}
 }
 \value{
-alpha = alpha or Type 1 error that minimizes or balances combined error rates
-beta = beta or Type 2 error that minimizes or balances combined error rates
-errorrate = weighted combined error rate
-objective = value that is the result of the minimization, either 0 (for balance) or the combined weighted error rates
-samplesize = the desired samplesize
+alpha = alpha or Type 1 error that minimizes or balances combined error rates,
+beta = beta or Type 2 error that minimizes or balances combined error rates,
+errorrate = weighted combined error rate,
+objective = value that is the result of the minimization, either 0 (for balance) or the combined weighted error rates,
+samplesize = the desired samplesize.
 }
 \description{
 Justify your alpha level by minimizing or balancing Type 1 and Type 2 error rates.
 }
 \section{References}{
 
-too be added
+Maier & Lakens (2021). Justify Your Alpha: A Primer on Two Practical Approaches
 }
 
 \examples{
