@@ -201,16 +201,23 @@ res7 <- JustifyAlpha::optimal_alpha(power_function = "Superpower::power_oneway_b
 res7$alpha
 res7$beta
 res7$errorrate
+res7$plot
 
+res8x <- JustifyAlpha::optimal_alpha(power_function = "Superpower::ANOVA_exact( (Superpower::ANOVA_design(design = '2b', n = 64, mu = c(0, 0.5), sd = 1, plot = FALSE)), alpha_level = x, verbose = FALSE)$main_results$power/100",
+              error = "minimize",
+              costT1T2 = 1,
+              priorH1H0 = 1)
 
-
+res8x$alpha
+res8x$beta
+res8x$errorrate
+res8x$plot
 
 ```
 
-
 # Avoiding the Lindley Paradox
 
-Sometimes we don't know the prior odds or the effect size of interest. In this case we can justify the alpha level by aiming to avoid the Lindley paradox. The Lindley paradox arises from the difference between error rate control and likelihood ratios in statistics. When the power is high, it is possible that a significant *p*-value is actually more likely to occur under the alternative than under the null hypothesis. This situation, where we reject the null hypothesis because p < alpha, but the *evidence* based on the likelihood suggests the observed data is more likely under the null hypothesis than the alternative hypothesis, is considered the Lindley paradox. The figure below shows that the steeper the p-value distribution (which occurs as the sample size increases) the more to the left the point where the expected p-value distribution under the alternative will cross the uniform p-value distribution under H0. The solution to prevent Lindley's paradox is to lower the alpha level as a function of the sample size.
+Sometimes we don't know the prior odds or the effect size of interest. In this case we can justify the alpha level by aiming to avoid the Lindley paradox. The Lindley paradox arises from the difference between error rate control and likelihood ratios in statistics. When the power is high, it is possible that a significant *p*-value is actually more likely to occur under the alternative than under the null hypothesis. This situation, where we reject the null hypothesis because p < alpha, but the *evidence* based on the likelihood suggests the observed data is more likely under the null hypothesis than the alternative hypothesis, is considered the Lindley paradox. The figure below shows that the steeper the *p*-value distribution (which occurs as the sample size increases) the more to the left the point where the expected *p*-value distribution under the alternative will cross the uniform *p*-value distribution under H0. The solution to prevent Lindley's paradox is to lower the alpha level as a function of the sample size.
 
 ```{r p-plot, fig.width=7, fig.height=5, echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.cap="*P*-value distributions for a two-sided independent *t*-test with N = 150 and d = 0.5 (black curve) or d = 0 (horizontal dashed line) which illustrates how *p*-values just below 0.05 can be more likely when there is no effect than when there is an effect."}
 N <- 150
@@ -268,7 +275,7 @@ abline(v = seq(0,1,0.1), h = c(0, 1/10, 1/3, 1, 3, 10), col = "gray", lty = 1)
 
 ```
 
-We can easily see which Bayes factor threshold corresponds to a specific *p*-value. For a Bayes factor of 1, we get a *p-value of:
+We can easily see which Bayes factor threshold corresponds to a specific *p*-value. For a Bayes factor of 1, we get a *p*-value of:
 
 ```{r}
 p[which.min(abs(bf-1))]
@@ -276,11 +283,11 @@ p[which.min(abs(bf-1))]
 
 So, as long as the observed *p*-value is smaller than `r round(p[which.min(abs(bf-1))], 3)` the data will provide stronger support for H1 than for H0.  
 
-`JustifyAlpha` allows users to directly compute the p-value that corresponds to allows to avoid the Lindley paradox by using the functions `ftestEvidence` and `ttestEvidence`, which calculate the alpha level that is needed so that a significance *p*-value is always more likely under the alternative hypothesis than under the null hypothesis, based on a specification of a prior for the alternative model. For a two sample *t*-test with 100 participants per group, we can do this using the following function.
+`JustifyAlpha` allows users to directly compute the alpha level that enables them to avoid the Lindley paradox through the functions `ftestEvidence` and `ttestEvidence`, which calculate the alpha level that is needed so that a significance *p*-value is always more likely under the alternative hypothesis than under the null hypothesis, based on a specification of a prior for the alternative model. For a two sample *t*-test with 100 participants per group, we can do this using the following function.
 
 ```{r}
-res9 <- ttestEvidence("lindley", 100, 100)[[1]]
-res9
+res8 <- ttestEvidence("lindley", 100, 100)[[1]]
+res8
 ```
 
-This shows that an alpha level of at least `r `round(res8,3)` would be required to avoid the Lindley paradox. I. Of course, researchers can also use an informed prior, or use the the likelihood of the data under the effect size of the alternative hypothesis. There are many approaches to prevent Lindley's paradox. All boil down to lowering the alpha level as a function of the sample size, but they differ slightly the relation between the sample size and the alpha level. 
+This shows that an alpha level of at least `r round(res8, 3)` would be required to avoid the Lindley paradox. Of course, researchers can also use an informed prior, or use the the likelihood of the data under the effect size of the alternative hypothesis. There are many approaches to prevent Lindley's paradox. All boil down to lowering the alpha level as a function of the sample size, but they differ slightly the relation between the sample size and the alpha level. 

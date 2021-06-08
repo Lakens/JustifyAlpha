@@ -3,19 +3,19 @@ library(pwr)
 library(ggplot2)
 library(shinydashboard)
 library(BayesFactor)
-library(JustifyAlpha) #replace alphaJustifieR
+library(JustifyAlpha)
 library(shinycssloaders)
 
 ui <- dashboardPage(
   dashboardHeader(title = "Justify Your Alpha"),
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Balance/Minimize Error Rates", tabName = "error", 
-               menuSubItem("Justify Alpha", tabName = "minimize"), 
+      menuItem("Balance/Minimize Error Rates", tabName = "error",
+               menuSubItem("Justify Alpha", tabName = "minimize"),
                menuSubItem("Justify Sample Size and Alpha", tabName = "sample"),
                icon = icon("calculator")),
-      menuItem("N as a Function of Sample Size", tabName = "alpha_sample_size", 
-               menuSubItem("t-test", tabName = "ttest"), 
+      menuItem("N as a Function of Sample Size", tabName = "alpha_sample_size",
+               menuSubItem("t-test", tabName = "ttest"),
                menuSubItem("ANOVA", tabName = "anova"),
                icon = icon("calculator")),
       menuItem("About", tabName = "about", icon = icon("info"))
@@ -46,19 +46,17 @@ ui <- dashboardPage(
                 infoBoxOutput("error1Box"),
                 box(plotOutput("plot1")),
                 box(title = "Explanation",
-                    status = "warning", 
-                    solidHeader = TRUE, collapsible = TRUE, 
-                    "Cohen (1988) considered a Type 1 error rate of 5% and a Type 2 error rate of 20% balanced. The reason for this was that instead of weighing both types of errors equally, he felt 'Type I errors are of the order of four times as serious as Type II errors.' This situation is illustrated in the default settings of the app. If the cost of a Type 1 error is 4 times as large as the cost of a Type 2 error, and we collect 64 participants in each condition of a two-sided t-test, that alpha is 0.05 and power is 0.80.", tags$br(), tags$br(),
-                    "If we design 2000 studies like this, the number of Type 1 and Type 2 errors we make depend on how often the null hypothesis is true, and how often the alternative hypothesis is true. Let's assume both are equally likely for now. This means that in 1000 studies the null hypothesis is true, and we will make 50 Type 1 errors. In 1000 studies the alternative hypothesis is true, and we will make 100%-80% = 20% Type 2 errors, so in 200 studies we will not observe a significant result even if there is a true effect. Combining Type 1 and Type 2 errors, in the long run, we should expect 250 of our 2000 studies to yield an error."
-                ),
+                    status = "warning",
+                    solidHeader = TRUE, collapsible = TRUE,
+                    "This Shiny app accompanies Maier & Lakens (2021). Justify Your Alpha: A Primer on Two Practical Approaches. For a full explanation on how to use this software, read the paper or the vignettes."),
                 box(title = "Power functions",
-                    status = "info", 
-                    solidHeader = TRUE, collapsible = TRUE, 
-                    "The trickiest thing of using this Shiny app is entering the correct power function. You can provide an analytic power function, either programmed yourself, or from an existing package loading on the server. Then, make sure the alpha value is not set, but specified as x, and that the function itself returns a single value, the power of the test. Finally, if you use existing power functions the shiny app needs to know which package this function is from, and thus the call to the function needs to be precended by the package and '::', so 'pwr::' or 'TOSTER::' or 'ANOVApower::'. Some examples that work are provided below.", tags$br(), tags$br(),
-                    "TOSTER::powerTOSTtwo(alpha=x, N=200, low_eqbound_d=-0.4, high_eqbound_d=0.4)", tags$br(), tags$br(),
+                    status = "info",
+                    solidHeader = TRUE, collapsible = TRUE,
+                    "The trickiest thing of using this Shiny app is entering the correct power function. You can provide an analytic power function, either programmed yourself, or from an existing package loading on the server. Then, make sure the alpha value is not set, but specified as x, and that the function itself returns a single value, the power of the test. Finally, if you use existing power functions the shiny app needs to know which package this function is from, and thus the call to the function needs to be precended by the package and '::', so 'pwr::' or 'TOSTER::'. Some examples that work are provided below.", tags$br(), tags$br(),
                     "pwr::pwr.anova.test(n = 100, k = 2, f = 0.171875, sig.level = x)$power", tags$br(), tags$br(),
-                    "For a more challenging power function, we can use the ANOVApower package by myself and Aaron Caldwell. The power function in the ANOVAexact function is based on a simulation, which takes a while to perform. The optimization function used in this Shiny app needs to perform the power calculation multiple times. Thus, the result takes a while to calculate. Furthermore, the output of the ANOVA_exact function is power as 80%, not 0.8, and thus we actually have to divide the power value by 100 for the Shiny app to return the correct results. Nevertheless, it works.", tags$br(), tags$br(),
-                    "ANOVApower::ANOVA_exact(ANOVApower::ANOVA_design(design = '2b', n = 100, mu = c(24, 26.2), sd = 6.4))$main_results$power/100"
+                    "TOSTER::powerTOSTtwo(alpha=x, N=200, low_eqbound_d=-0.4, high_eqbound_d=0.4)", tags$br(), tags$br(),
+                    "For a more challenging power function, we can use the Superpower package by Daniel Lakens and Aaron Caldwell. The power function in the ANOVAexact function is based on a simulation, which takes a while to perform. The optimization function used in this Shiny app needs to perform the power calculation multiple times. Thus, the result takes a minutes to calculate. Press calculate, and check the results 5 to 10 minutes later. Furthermore, the output of the ANOVA_exact function prints power as 80%, not 0.8, and thus we actually have to divide the power value by 100 for the Shiny app to return the correct results. Nevertheless, it works if you are very patient.", tags$br(), tags$br(),
+                    "Superpower::ANOVA_exact( (Superpower::ANOVA_design(design = '2b', n = 64, mu = c(0, 0.5), sd = 1, plot = FALSE)), alpha_level = x, verbose = FALSE)$main_results$power/100"
                 )
               )
       ),
@@ -79,7 +77,7 @@ ui <- dashboardPage(
                   br(),
                   numericInput("errorrate2", "Desired Weighted Combined Error Rate", 0.05, min = 0, max = 1),
                   textAreaInput("power_function2", "Power function:", "pwr::pwr.t.test(d = 0.5, n = sample_n, sig.level = x, type = 'two.sample', alternative = 'two.sided')$power", width = '400px', height = '200px'),
-                  actionButton("power_start2", "Calculate") 
+                  actionButton("power_start2", "Calculate")
                 ),
                 infoBoxOutput("alpha1Box2"),
                 infoBoxOutput("beta1Box2"),
@@ -87,14 +85,14 @@ ui <- dashboardPage(
                 infoBoxOutput("error1Box2"),
                 box(plotOutput("plot2")),
                 box(title = "Explanation",
-                    status = "warning", 
-                    solidHeader = TRUE, collapsible = TRUE, 
+                    status = "warning",
+                    solidHeader = TRUE, collapsible = TRUE,
                     "Cohen (1988) considered a Type 1 error rate of 5% and a Type 2 error rate of 20% balanced. The reason for this was that instead of weighing both types of errors equally, he felt 'Type I errors are of the order of four times as serious as Type II errors.' This situation is illustrated in the default settings of the app. If the cost of a Type 1 error is 4 times as large as the cost of a Type 2 error, and we collect 64 participants in each condition of a two-sided t-test, that alpha is 0.05 and power is 0.80.", tags$br(), tags$br(),
                     "If we design 2000 studies like this, the number of Type 1 and Type 2 errors we make depend on how often the null hypothesis is true, and how often the alternative hypothesis is true. Let's assume both are equally likely for now. This means that in 1000 studies the null hypothesis is true, and we will make 50 Type 1 errors. In 1000 studies the alternative hypothesis is true, and we will make 100%-80% = 20% Type 2 errors, so in 200 studies we will not observe a significant result even if there is a true effect. Combining Type 1 and Type 2 errors, in the long run, we should expect 250 of our 2000 studies to yield an error."
                 ),
                 box(title = "Power functions",
-                    status = "info", 
-                    solidHeader = TRUE, collapsible = TRUE, 
+                    status = "info",
+                    solidHeader = TRUE, collapsible = TRUE,
                     "The trickiest thing of using this Shiny app is entering the correct power function. You can provide an analytic power function, either programmed yourself, or from an existing package loading on the server. Then, make sure the alpha value is not set, but specified as x, and that the sample is not set but specified as 'sample_n'. In additino, make sure that the function itself returns a single value, the power of the test. Finally, if you use existing power functions the shiny app needs to know which package this function is from, and thus the call to the function needs to be precended by the package and '::', so 'pwr::' or 'TOSTER::' or 'ANOVApower::'. Some examples that work are provided below.", tags$br(), tags$br(),
                     "TOSTER::powerTOSTtwo(alpha=x, N=200, low_eqbound_d=-0.4, high_eqbound_d=0.4)", tags$br(), tags$br(),
                     "pwr::pwr.anova.test(n = sample_n, k = 2, f = 0.171875, sig.level = x)$power", tags$br(), tags$br(),
@@ -110,8 +108,8 @@ ui <- dashboardPage(
                   selectInput("one.sided", "One sided or two sided?",  c("two sided" = FALSE,
                                                                     "one sided" = TRUE)),
                   sliderInput("evidence", "How much more likely should the data at least be under the alternative hypothesis?",
-                              min = 1, 
-                              max = 10, 
+                              min = 1,
+                              max = 10,
                               value = 3),
                   numericInput("rscale", "Cauchy scale (advanced)", 0.707, min = 0.1),
                   textOutput("likelyttest"),
@@ -122,12 +120,12 @@ ui <- dashboardPage(
                 box(plotOutput("plotttest")),
                 #box(plotOutput("ttestplot")),
                 box(title = "Explanation",
-                    status = "warning", 
-                    solidHeader = TRUE, collapsible = TRUE, 
+                    status = "warning",
+                    solidHeader = TRUE, collapsible = TRUE,
                     "The idea behind this recommendation is discussed most extensively by Leamer, 1978. He writes 'The rule of thumb quite popular now, that is, setting the significance level arbitrarily to .05, is shown to be deficient in the sense that from every reasonable viewpoint the significance level should be a decreasing function of sample size.' This was already recognized by Jeffreys (1939), who discusses ways to set the alpha level in Neyman-Pearson statistics: 'We should therefore get the best result, with any distribution of alpha, by some form that makes the ratio of the critical value to the standard error increase with n. It appears then that whatever the distribution may be, the use of a fixed P limit cannot be the one that will make the smallest number of mistakes.'", tags$br(), tags$br(),
                     "The goal is to prevent Lindley's paradox (https://en.wikipedia.org/wiki/Lindley%27s_paradox). This is explained in more detail in week 1 of Daniel's MOOC (https://www.coursera.org/learn/statistical-inferences).", tags$br(), tags$br(),
-                    "To prevent Lindley's paradox, one would need to lower the alpha level as a function of the statistical power. Good (1992) notes: 'we have empirical evidence that sensible P values are related to weights of evidence and, therefore, that P values are not entirely without merit. The real objection to P values is not that they usually are utter nonsense, but rather that they can be highly misleading, especially if the value of N is not also taken into account and is large.' 
-                    Therefore, we justify the alpha level as a function of sample size by relating it to Bayes Factors. A Bayes factor compares the likelihood of the data under the alternative hypothesis and under the null hypothesis. Therefore, setting the alpha level to always correspond to at least Bayes factor 1 avoids the Lindley paradox. 
+                    "To prevent Lindley's paradox, one would need to lower the alpha level as a function of the statistical power. Good (1992) notes: 'we have empirical evidence that sensible P values are related to weights of evidence and, therefore, that P values are not entirely without merit. The real objection to P values is not that they usually are utter nonsense, but rather that they can be highly misleading, especially if the value of N is not also taken into account and is large.'
+                    Therefore, we justify the alpha level as a function of sample size by relating it to Bayes Factors. A Bayes factor compares the likelihood of the data under the alternative hypothesis and under the null hypothesis. Therefore, setting the alpha level to always correspond to at least Bayes factor 1 avoids the Lindley paradox.
                     However, in Bayesian statistics, a Bayes factor of 1 or large is only regarded as weak evidence and we might wish to, for example, achieve at least moderate evidence if the p-value is significant. Therefore, we can adjust the desired evidence by using the slider."
                     )
               )
@@ -139,26 +137,26 @@ ui <- dashboardPage(
                 numericInput("df1", "df1", 1, min = 0),
                 numericInput("df2", "df2", 10, min = 0),
                 sliderInput("evidence2", "How much more likely should the data at least be under the alternative hypothesis?",
-                            min = 1, 
-                            max = 10, 
-                            value = 3), 
+                            min = 1,
+                            max = 10,
+                            value = 3),
                 textOutput("likelyanova"),
                 br(),
                 selectInput("paired", "Within or Between Subjects?",
                             c("within" = TRUE,
                               "between" = FALSE
-                            )), 
+                            )),
                 actionButton("power_start4", "Calculate")
               ),
             infoBoxOutput("anovabox"),
             box(plotOutput("plotanova")),
             box(title = "Explanation",
-                status = "warning", 
-                solidHeader = TRUE, collapsible = TRUE, 
+                status = "warning",
+                solidHeader = TRUE, collapsible = TRUE,
                 "The idea behind this recommendation is discussed most extensively by Leamer, 1978. He writes 'The rule of thumb quite popular now, that is, setting the significance level arbitrarily to .05, is shown to be deficient in the sense that from every reasonable viewpoint the significance level should be a decreasing function of sample size.' This was already recognized by Jeffreys (1939), who discusses ways to set the alpha level in Neyman-Pearson statistics: 'We should therefore get the best result, with any distribution of alpha, by some form that makes the ratio of the critical value to the standard error increase with n. It appears then that whatever the distribution may be, the use of a fixed P limit cannot be the one that will make the smallest number of mistakes.'", tags$br(), tags$br(),
                 "The goal is to prevent Lindley's paradox (https://en.wikipedia.org/wiki/Lindley%27s_paradox). This is explained in more detail in week 1 of Daniel's MOOC (https://www.coursera.org/learn/statistical-inferences).", tags$br(), tags$br(),
-                "To prevent Lindley's paradox, one would need to lower the alpha level as a function of the statistical power. Good (1992) notes: 'we have empirical evidence that sensible P values are related to weights of evidence and, therefore, that P values are not entirely without merit. The real objection to P values is not that they usually are utter nonsense, but rather that they can be highly misleading, especially if the value of N is not also taken into account and is large.' 
-                Therefore, we justify the alpha level as a function of sample size by relating it to Bayes Factors. A Bayes factor compares the likelihood of the data under the alternative hypothesis and under the null hypothesis. Therefore, setting the alpha level to always correspond to at least Bayes factor 1 avoids the Lindley paradox. 
+                "To prevent Lindley's paradox, one would need to lower the alpha level as a function of the statistical power. Good (1992) notes: 'we have empirical evidence that sensible P values are related to weights of evidence and, therefore, that P values are not entirely without merit. The real objection to P values is not that they usually are utter nonsense, but rather that they can be highly misleading, especially if the value of N is not also taken into account and is large.'
+                Therefore, we justify the alpha level as a function of sample size by relating it to Bayes Factors. A Bayes factor compares the likelihood of the data under the alternative hypothesis and under the null hypothesis. Therefore, setting the alpha level to always correspond to at least Bayes factor 1 avoids the Lindley paradox.
                 However, in Bayesian statistics, a Bayes factor of 1 or large is only regarded as weak evidence and we might wish to, for example, achieve at least moderate evidence if the p-value is significant. Therefore, we can adjust the desired evidence by using the slider."
           )
         )
@@ -174,7 +172,7 @@ ui <- dashboardPage(
               h4("The best way to cite this app and the explanations of how to justify alpha levels in practice is through the preprint:"),
               h4("Maier & Lakens (2021). Justify Your Alpha: A Primer on Two Practical Approaches")
       )
-      
+
     )
 )
 )
@@ -182,27 +180,27 @@ ui <- dashboardPage(
 
 
 server <- function(input, output) {
-  
+
   output$outH1H0 <- renderText({
     paste("This means that H1 is ", input$priorH1H0, " times as likley as H0 and that the probability of H1 is ", round(input$priorH1H0/(input$priorH1H0+1), digits = 2), sep = "")
   })
-  
+
   output$outH1H02 <- renderText({
     paste("This means that H1 is ", input$priorH1H02, " times as likley as H0 and that the probability of H1 is ", round(input$priorH1H02/(input$priorH1H02+1), digits = 2), sep = "")
   })
-  
+
   output$outT1T2 <- renderText({
     paste("This means that a false positive is ", input$costT1T2, " times as costly as a false negative.", sep = "")
   })
-  
+
   output$outT1T22 <- renderText({
     paste("This means that a false positive is ", input$costT1T22, " times as costly as a false negative.", sep = "")
   })
-  
+
   output$likelyttest <- renderText({
     if (input$evidence < 3)   {
       paste("This means that the data is at least ", input$evidence, " times more likely under the alternative than under the null. This avoids Lindleys paradox but implies only weak evidence.", sep = "")
-    } 
+    }
     else {
       if (input$evidence == 10){
         paste("This means that the data is at least ", input$evidence, " times more likely under the alternative than under the null. This corresponds to strong evidence for the alternative.", sep = "")
@@ -211,11 +209,11 @@ server <- function(input, output) {
       }
     }
   })
-  
+
   output$likelyanova <- renderText({
     if (input$evidence2 < 3)   {
       paste("This means that the data is at least ", input$evidence2, " times more likely under the alternative than under the null. This avoids Lindleys paradox but implies only weak evidence.", sep = "")
-    } 
+    }
     else {
       if (input$evidence2 == 10){
         paste("This means that the data is at least ", input$evidence2, " times more likely under the alternative than under the null. This corresponds to strong evidence for the alternative.", sep = "")
@@ -224,39 +222,39 @@ server <- function(input, output) {
       }
     }
   })
-  
-  
-  observeEvent(input$power_start, { 
+
+
+  observeEvent(input$power_start, {
     error <- isolate(input$error)
     power_function <- isolate(input$power_function)
     costT1T2 <- isolate(input$costT1T2)
     priorH1H0 <- isolate(input$priorH1H0)
     res <- optimal_alpha(power_function, costT1T2, priorH1H0, error)
-    
+
     beta1 <- round(res$beta, digits = 4)
     alpha1 <- round(res$alpha, digits = 4)
     errorrate <- round(res$errorrate, digits = 4)
-    
+
     costT1T22  <- input$costT1T22
     priorH1H02 <- input$priorH1H02
-    
+
     # list(alpha1 = format(alpha1, digits = 10, nsmall = 5, scientific = FALSE),
     #      beta1 = format(beta1, digits = 10, nsmall = 5, scientific = FALSE))
-    
+
     output$alpha1Box <- renderInfoBox({
       infoBox(
         "Alpha", alpha1,icon = icon("alpha"),
         color = "purple"
-      ) 
+      )
     })
-    
+
     output$beta1Box <- renderInfoBox({
       infoBox(
         "Beta", beta1, icon = icon("beta"),
         color = "green"
       )
     })
-    
+
     output$error1Box <- renderInfoBox({
       infoBox(
         "Weighted Combined Error Rate", errorrate, icon = icon(""),
@@ -266,10 +264,10 @@ server <- function(input, output) {
     output$plot1 <- renderPlot({
       res$plot
     })
-    
+
   })
-  
-  observeEvent(input$power_start2, { 
+
+  observeEvent(input$power_start2, {
     showModal(modalDialog("Estimating sample size, alpha level, and power. Please be patient, this might take several minutes.", footer=NULL))
     isolate(input$power_start2)
     error2 <- isolate(input$error2)
@@ -282,35 +280,35 @@ server <- function(input, output) {
     beta2 <- round(res2$beta, digits = 4)
     errorrates <- round(res2$errorrate, digits = 4)
     sample2 <- res2$samplesize
-    
+
     output$alpha1Box2 <- renderInfoBox({
       infoBox(
         "Alpha", alpha2,icon = icon("alpha"),
         color = "purple"
       )
     })
-    
+
     output$beta1Box2 <- renderInfoBox({
       infoBox(
         "Beta", beta2, icon = icon("beta"),
         color = "green"
       )
     })
-    
+
     output$error1Box2 <- renderInfoBox({
       infoBox(
         "Weighted Combined Error Rate", errorrates, icon = icon(""),
         color = "red"
       )
     })
-    
+
     output$sampleBox2 <- renderInfoBox({
       infoBox(
         "Sample Size", sample2, icon = icon(""),
         color = "yellow"
       )
     })
-    
+
     output$plot2 <- renderPlot({
       res2$plot
     })
@@ -320,27 +318,27 @@ server <- function(input, output) {
 
   # })
   observeEvent(input$power_start3, {
-  
+
     evidence <- as.numeric(isolate(input$evidence))
     n1 <- isolate(input$n1)
     n2 <- isolate(input$n2)
     one.sided <- as.logical(isolate(input$one.sided))
     rscale <- isolate(input$rscale)
-    
+
   output$ttestbox <- renderInfoBox({
-  
+
     infoBox(
       "Alpha", paste0(round(ttestEvidence(as.numeric(evidence), n1, n2, as.logical(one.sided), rscale = rscale)[[1]], digits = 3)),
       icon = icon("alpha"),
       color = "purple"
     )
   })
-  
+
   output$plotttest <- renderPlot({
     #ttestEvidence(as.numeric(input$evidence), input$n1, input$n2, as.logical(input$one.sided), printplot = T)
 
-    
-      
+
+
 
     lindley  <- ttestEvidence(1,   n1, n2 = n2, one.sided, rscale = rscale, printplot =F)[[1]]
     moderate <- ttestEvidence(3,   n1, n2 = n2, one.sided, rscale = rscale, printplot =F)[[1]]
@@ -382,29 +380,29 @@ server <- function(input, output) {
     abline(v = indicated, lty = 3, col = "red")
   })
   })
-  
+
   observeEvent(input$power_start4, {
-    
+
     evidence <- as.numeric(isolate(input$evidence2))
     df1      <- isolate(input$df1)
     df2      <- isolate(input$df2)
-    paired   <- isolate(input$paired)  
-    
+    paired   <- isolate(input$paired)
+
   output$anovabox <- renderInfoBox({
- 
+
     infoBox(
       "Alpha", paste0(round(ftestEvidence(evidence, df1, df2, paired)[[1]], digits = 3)),
       icon = icon("alpha"),
       color = "purple"
     )
   })
-  
+
   output$plotanova <- renderPlot({
     lindley  <- ftestEvidence(1, df1, df2, paired, printplot = F)[[1]]
     moderate <- ftestEvidence(3, df1, df2, paired, printplot = F)[[1]]
     strong   <- ftestEvidence(10, df1, df2, paired, printplot = F)[[1]]
     indicated<- ftestEvidence(evidence, df1, df2, paired, printplot = F)[[1]]
-    
+
     loops <- seq(from = 0, to = 100, by = 0.01)
     p <- numeric(length(loops))
     bf <- numeric(length(loops))
@@ -422,14 +420,14 @@ server <- function(input, output) {
     axis(side=1, at = c(0, as.numeric(lindley), as.numeric(moderate), as.numeric(strong), 0.05, indicated), labels = c(0, round(lindley, digits = 3), round(moderate, digits = 3), round(strong, digits = 3), 0.05, round(indicated, digits = 3)),  lwd = 3, las = 3)
     axis(side=2, at = c(0.1, 0.33, 1, 3, 10), labels = c("1/10", "1/3", 1, 3, 10), lwd = 3)
     points(indicated, evidence, col = "red", lwd = 4)
-    
+
     abline(h = c(0.1, 0.33, 1, 3, 10), col = "gray", lty = 2)
     abline(v = c(lindley, moderate, strong), lty = 3)
     abline(v = indicated, lty = 3, col = "red")
   })
   })
-  
-}  
+
+}
 
 
 # Run the application
