@@ -15,22 +15,20 @@
 #' @examples
 #' ## Optimize power for a independent t-test, smallest effect of interest
 #' ## d = 0.5, desired weighted combined error rate = 5%
+#' \dontrun{
 #' res <- optimal_sample(power_function = "pwr::pwr.t.test(d = 0.5, n = sample_n, sig.level = x,
 #' type = 'two.sample', alternative = 'two.sided')$power",errorgoal = 0.05)
 #' res$alpha
 #' res$beta
 #' res$errorrate
 #' res$samplesize
+#' }
 #' @section References:
 #' Maier & Lakens (2021). Justify Your Alpha: A Primer on Two Practical Approaches
 #' @importFrom stats optimize
 #' @export
-
-alpha_sample_solve <- function(i, power_function, errorgoal, costT1T2, priorH1H0, error){
-
-  res <- optimal_alpha(power_function = paste(stringr::str_replace(power_function, "sample_n", as.character(i))), costT1T2 = costT1T2, priorH1H0 = priorH1H0, error = error)
-  (errorgoal - res$errorrate)^2
-}
+#'
+#'
 
 optimal_sample <- function(power_function, errorgoal = 0.05, costT1T2 = 1, priorH1H0 = 1, error = "minimize", printplot = FALSE) {
 
@@ -103,4 +101,3 @@ optimal_sample <- function(power_function, errorgoal = 0.05, costT1T2 = 1, prior
          )
   }
 }
-

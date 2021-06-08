@@ -1,0 +1,18 @@
+citHeader("To cite JustifyAlpha, please use:")
+
+citEntry(entry = "Unpublished",
+  author = c(person(given = "Maximilian",
+           family = "Maier",
+           role = c("aut", "cre"),
+           email = "maxi-maier@web.de"),
+           person(given = "Daniël",
+		   family = "Lakens",
+           role = c("aut", "cre"),
+           email = "D.Lakens@tue.nl")
+           ),
+  title = "Justify Your Alpha: A Primer on Two Practical Approaches",
+  year = "2021",
+  note = "Self Published on GitHub",
+  url = "https://lakens.github.io/JustifyAlpha/",
+  textVersion = "M. Maier, D. Lakens. (2021). Justify Your Alpha: A Primer on Two Practical Approaches. https://lakens.github.io/JustifyAlpha/"
+)

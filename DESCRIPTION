@@ -1,5 +1,5 @@
 Package: JustifyAlpha
-Title: Functions to justify your alpha
+Title: Justifying Alpha Levels for Hypothesis Tests
 Version: 0.1
 Authors@R: 
     c(person(given = "Maximilian",
@@ -12,7 +12,7 @@ Authors@R:
            email = "D.Lakens@tue.nl",
            comment = c(ORCID = "0000-0002-0247-239X"))
     )
-Description: Functions to justify your alpha level as a function of the sample size or by minimizing or balancing error rates.
+Description: Functions to justify alpha levels for statistical hypothesis tests as a function of the sample size, or by minimizing or balancing error rates.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

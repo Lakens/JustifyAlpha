@@ -165,8 +165,8 @@ The more a prediction goes against things we know or expect to be true, the more
 
 So far we have only discussed how to justify the alpha level given a fixed sample size. However, in practice researchers usually want to conduct power analysis. This can be incorporated smoothly when minimizing or balancing error rates. To do so, you simply need to specify the weighted combined error rate you are aiming for and the function `optimal_sample` will return the sample size as well as the alpha and beta required to achieve the desired weighted combined error rate. 
 
-```{r optimal sample}
-res6 <- optimal_sample(power_function = "pwr.t.test(d=0.5, n = sample_n, sig.level = x, type='two.sample', alternative='two.sided')$power", 
+```{r optimal_sample}
+res6 <- JustifyAlpha::optimal_sample(power_function = "pwr.t.test(d=0.5, n = sample_n, sig.level = x, type='two.sample', alternative='two.sided')$power", 
                        error = "minimize", 
                        errorgoal = 0.05, 
                        costT1T2 = 1,
@@ -179,39 +179,33 @@ Using the code above, we see that if we aim to achieve a combined error rate of 
 
 # Specifying power functions
 
-So far we have used only one function from the `pwr` package to specify the power function. However, any function can be entered. Below we illustrate some additional approaches. It is important to specify a power function that returns the power, where the alpha level is a variable x, and where the output is a power value between 0 and 1 (e.g., 0.8).  
+So far we have used only one function from the `pwr` package to specify the power function. However, any function can be entered. Below we illustrate some additional approaches. The trickiest part is entering the correct power function. You can provide an analytic power function, either programmed yourself, or from an existing package loading on the server. Then, make sure the alpha value is not set, but specified as x, and that the function itself returns a single value, the power of the test. Finally, if you use existing power functions the shiny app needs to know which package this function is from, and thus the call to the function needs to be precended by the package and '::', so 'pwr::' or 'TOSTER::'. Some examples that work are provided below.
 
-```{r power_alt, fig.width=7}
-design_result <- Superpower::ANOVA_design(
-  design = "2b",
-  n = 64,
-  mu = c(0, 0.5),
-  sd = 1
-)
-
-Superpower::ANOVA_exact(design_result, alpha_level = 0.05, verbose = FALSE)$main_results$power/100
-Superpower::power_oneway_between(design_result, alpha_level = 0.05)$power/100
-pwr.t.test(d=0.5, n=64, sig.level = 0.05, type='two.sample', alternative='two.sided')$power
-
-res7 <- JustifyAlpha::optimal_alpha(power_function = "Superpower::power_oneway_between(design_result, alpha_level = x)$power/100",
+```{r eval = FALSE}
+res <- JustifyAlpha::optimal_alpha(power_function = "TOSTER::powerTOSTtwo(alpha=x, N=200, low_eqbound_d=-0.4, high_eqbound_d=0.4) ",
               error = "minimize",
               costT1T2 = 1,
               priorH1H0 = 1)
 
-res7$alpha
-res7$beta
-res7$errorrate
-res7$plot
+res$alpha
+res$beta
+res$errorrate
+res$plot
+``` 
 
-res8x <- JustifyAlpha::optimal_alpha(power_function = "Superpower::ANOVA_exact( (Superpower::ANOVA_design(design = '2b', n = 64, mu = c(0, 0.5), sd = 1, plot = FALSE)), alpha_level = x, verbose = FALSE)$main_results$power/100",
+For a more challenging power function, we can use the Superpower package by Daniel Lakens and Aaron Caldwell. The power function in the ANOVAexact function is based on a simulation, which takes a while to perform. The optimization function used in this Shiny app needs to perform the power calculation multiple times. Thus, the result takes a minutes to calculate. Press calculate, and check the results 5 to 10 minutes later. Furthermore, the output of the ANOVA_exact function prints power as 80%, not 0.8, and thus we actually have to divide the power value by 100 for the Shiny app to return the correct results. Nevertheless, it works if you are very patient (this code is not run to prevent . 
+
+
+```{r, eval = FALSE}
+res <- JustifyAlpha::optimal_alpha(power_function = "Superpower::ANOVA_exact( (Superpower::ANOVA_design(design = '2b', n = 64, mu = c(0, 0.5), sd = 1, plot = FALSE)), alpha_level = x, verbose = FALSE)$main_results$power/100",
               error = "minimize",
               costT1T2 = 1,
               priorH1H0 = 1)
 
-res8x$alpha
-res8x$beta
-res8x$errorrate
-res8x$plot
+res$alpha
+res$beta
+res$errorrate
+res$plot
 
 ```
 

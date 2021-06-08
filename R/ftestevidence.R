@@ -16,28 +16,6 @@
 #' @importFrom grDevices recordPlot
 #' @importFrom graphics abline axis points
 
-bf_bic <- function(F, df1, df2, repeated=FALSE, report.as="BF10") {
-  if (repeated==FALSE) {
-    N = df1+df2+1
-  }
-  else {
-    N = df1+df2
-  }
-
-  bf = sqrt(N^df1*(1+F*df1/df2)^(-1*N))
-
-  if (report.as=="BF01"){
-    return(c(B01=bf))
-  }
-  else {
-    return(c(B10=1/bf))
-  }
-}
-
-alpha_f.test_solve <- function(x, df1, df2, evidence, paired){
-  (evidence - bf_bic(x, df1, df2, paired))^2
-}
-
 ftestEvidence <- function(evidence, df1, df2, paired = FALSE, printplot = FALSE){
 
   if (evidence == "lindley"){

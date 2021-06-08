@@ -19,31 +19,6 @@
 
 ###Compute Bayes Factor for t-statistic and degrees of freedom###
 
-bf_t.test <- function(t, n1, n2 = 0, rscale = sqrt(2)/2, one.sided = F){
-  # if (n2 == 0) {
-  #   v <- n1 -1
-  #   N <- n1
-  # } else {
-  #   N <- n1*n2/(n1+n2)
-  #   v <- n1 + n2 -2
-  # }
-  # if (Cauchy == F) {
-  #   ml1 <- 1/sqrt(1+N)*(1+t^2/((1+N)*v))^(-(v+1)/2)
-  #   ml0 <- (1+t^2/v)^(-(v+1)/2)
-  #   return(ml1/ml0)
-  # } else {
-  if(!one.sided){
-    return(exp(BayesFactor::ttest.tstat(t, n1, n2, rscale = rscale)$bf))
-  }
-  else if(one.sided){
-    return(exp(BayesFactor::ttest.tstat(t, n1, n2, rscale = rscale, nullInterval = c(0, Inf))$bf))
-  }
-}
-
-alpha_t.test_solve <- function(x, n1, n2, evidence, rscale, one.sided){
-  (evidence - bf_t.test(x, n1, n2, rscale, one.sided))^2
-}
-
 ttestEvidence <- function(evidence, n1, n2 = 0, one.sided = F, rscale = sqrt(2)/2, printplot = F) {
   if (evidence == "lindley"){
     evidence = 1
