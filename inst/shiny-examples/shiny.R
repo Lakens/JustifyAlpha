@@ -4,7 +4,6 @@ library(ggplot2)
 library(shinydashboard)
 library(BayesFactor)
 library(JustifyAlpha)
-library(shinycssloaders)
 
 ui <- dashboardPage(
   dashboardHeader(title = "Justify Your Alpha"),
