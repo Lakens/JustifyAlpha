@@ -20,4 +20,4 @@ A vignette explaining how to use this package and the Shiny app is available fro
 
 # Shiny App
 
-You can run the shiny app locally, but an online version is available from https://shiny.ieis.tue.nl/JustifyAlpha/ and https://maxma1er.shinyapps.io/JustifyAlpha/ and 
+You can run the shiny app locally, but an online version is available from https://shiny.ieis.tue.nl/JustifyAlpha/ and https://maxma1er.shinyapps.io/JustifyAlpha/. 

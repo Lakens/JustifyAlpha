@@ -1,4 +1,4 @@
-Justify
+JustifyAlpha
 ================
 Daniel Lakens and Maximilian Maier
 2021-06-08
@@ -37,4 +37,4 @@ available from here:
 
 You can run the shiny app locally, but an online version is available
 from <https://shiny.ieis.tue.nl/JustifyAlpha/> and
-<https://maxma1er.shinyapps.io/JustifyAlpha/> and
+<https://maxma1er.shinyapps.io/JustifyAlpha/>.
