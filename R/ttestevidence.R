@@ -37,7 +37,7 @@ ttestEvidence <- function(evidence, n1, n2 = 0, one.sided = F, rscale = sqrt(2)/
     df = n1 -1
   }
   ##optimize to find alpha level
-  crit_t <- optim(1.96, alpha_t.test_solve, lower = 0, upper = Inf, method = "L-BFGS-B",
+  crit_t <- optim(1.96, alpha_t.test_solve, lower = 0.01, upper = 100, method = "L-BFGS-B",
                   n1 = n1, n2 = n2, evidence = evidence, rscale = rscale, one.sided = one.sided)$par
   if (!one.sided){
   alpha <- (1 - pt(crit_t, df))*2

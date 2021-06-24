@@ -29,7 +29,7 @@ ftestEvidence <- function(evidence, df1, df2, paired = FALSE, printplot = FALSE)
   }
 
   ##optim to find alpha level for evidence
-  crit_f <- optim(5, alpha_f.test_solve, lower = 0, upper = Inf, method = "L-BFGS-B", control = list(maxit = 100000),
+  crit_f <- optim(5, alpha_f.test_solve, lower = 0.01, upper = 100, method = "L-BFGS-B", control = list(maxit = 100000),
                   df1 = df1, df2 = df2, evidence = evidence, paired = paired)$par
   alpha <- (1 - pf(crit_f, df1, df2))
 
