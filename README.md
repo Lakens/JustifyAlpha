@@ -38,3 +38,8 @@ available from here:
 You can run the shiny app locally, but an online version is available
 from <https://shiny.ieis.tue.nl/JustifyAlpha/> and
 <https://maxma1er.shinyapps.io/JustifyAlpha/>.
+
+
+  <!-- badges: start -->
+  [![R-CMD-check](https://github.com/Lakens/JustifyAlpha/workflows/R-CMD-check/badge.svg)](https://github.com/Lakens/JustifyAlpha/actions)
+  <!-- badges: end -->

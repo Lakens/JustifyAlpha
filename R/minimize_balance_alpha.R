@@ -22,6 +22,7 @@
 #' @section References:
 #' Maier & Lakens (2021). Justify Your Alpha: A Primer on Two Practical Approaches
 #' @importFrom stats optimize
+#' @import qpdf
 #' @export
 #'
 optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "minimize", verbose = FALSE, printplot = FALSE) {
@@ -50,7 +51,9 @@ optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "
   } else if (error == "minimize"){
     beta <- res$objective - res$minimum
   }
-
+  
+  if(printplot){
+    
   #Add plot
   alpha_level <- 0
   alpha_list <- numeric(9999)
@@ -65,7 +68,6 @@ optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "
     w_list[i] <- (alpha_level + beta_list[i]) / 2
     w_c_list[i] <- (costT1T2 * alpha_level + priorH1H0 * beta_list[i]) / (costT1T2 + priorH1H0)
   }
-
   x <- res$minimum
 
   # Create dataframe for plotting
@@ -77,20 +79,28 @@ optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "
     ggplot2::theme_minimal(base_size = 18) +
     ggplot2::scale_x_continuous("alpha", seq(0,1,0.1)) +
     ggplot2::scale_y_continuous("weighted combined error rate", seq(0,1,0.1), limits = c(0,1))
-
+  print(w_c_alpha_plot)
+  }
   #Store results
+  x <- res$minimum
   alpha = res$minimum
   beta = 1 - eval(parse(text=paste(power_function)))
-  if(printplot){
-    print(w_c_alpha_plot)
-  }
-      list(alpha = res$minimum,
+ if(!printplot){
+      return <- list(alpha = res$minimum,
                  beta = 1 - eval(parse(text=paste(power_function))),
                  errorrate = (costT1T2 * alpha + priorH1H0 * beta) / (costT1T2 + priorH1H0),
-                 objective = res$objective,
-                 plot_data = plot_data,
-                 plot = w_c_alpha_plot)
-
+                 objective = res$objective)
+ }
+    
+ if(printplot){
+   return <- list(alpha = res$minimum,
+        beta = 1 - eval(parse(text=paste(power_function))),
+        errorrate = (costT1T2 * alpha + priorH1H0 * beta) / (costT1T2 + priorH1H0),
+        objective = res$objective,
+        plot_data = plot_data,
+        plot = w_c_alpha_plot)
+ }
+  return(return)
 }
 
 

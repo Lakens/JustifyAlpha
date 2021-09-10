@@ -228,7 +228,7 @@ server <- function(input, output) {
     power_function <- isolate(input$power_function)
     costT1T2 <- isolate(input$costT1T2)
     priorH1H0 <- isolate(input$priorH1H0)
-    res <- optimal_alpha(power_function, costT1T2, priorH1H0, error)
+    res <- optimal_alpha(power_function, costT1T2, priorH1H0, error, printplot = T)
 
     beta1 <- round(res$beta, digits = 4)
     alpha1 <- round(res$alpha, digits = 4)

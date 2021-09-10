@@ -15,6 +15,7 @@
 #' @importFrom stats optim pf pt
 #' @importFrom grDevices recordPlot
 #' @importFrom graphics abline axis points
+#' @import qpdf
 #' @export
 
 ###Compute Bayes Factor for t-statistic and degrees of freedom###

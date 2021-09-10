@@ -15,6 +15,8 @@
 #' @importFrom stats optim pf pt
 #' @importFrom grDevices recordPlot
 #' @importFrom graphics abline axis points
+#' @import qpdf
+
 
 ftestEvidence <- function(evidence, df1, df2, paired = FALSE, printplot = FALSE){
 
