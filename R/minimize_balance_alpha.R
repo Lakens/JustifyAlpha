@@ -8,7 +8,7 @@
 #' @return
 #' alpha = alpha or Type 1 error that minimizes or balances combined error rates,
 #' beta = beta or Type 2 error that minimizes or balances combined error rates,
-#' errorate = weighted combined error rate,
+#' errorrate = weighted combined error rate,
 #' objective = value that is the result of the minimization, either 0 (for balance) or the combined weighted error rates.
 #'
 #' @examples

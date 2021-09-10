@@ -34,7 +34,7 @@ devtools::install_github("Lakens/JustifyAlpha")
 
 # Minimizing Error Rates
 
-Assume we plan to perform an indepedent *t*-test, where our smallest effect size of interest is d = 0.5, and we are planning to collect 64 participants in each condition. We would normally calculate power as follows:
+Assume we plan to perform an independent *t*-test, where our smallest effect size of interest is d = 0.5, and we are planning to collect 64 participants in each condition. We would normally calculate power as follows:
 
 `pwr.t.test(d = 0.5, n = 64, sig.level = 0.05, type = 'two.sample', alternative = 'two.sided')$power`
 
@@ -61,7 +61,7 @@ res1$errorrate
 
 The output indicates that given the specific settings (e.g., weighing Type 1 and Type 2 errors equally, expecting H1 and H0 to be equally likely to be true) the combined error rate is minimized when (rounding to 3 decimal places) the alpha level is set to 0.10 (indicated by res\$alpha), and the Type 2 error rate is set to 0.122 (indicated by res\$beta). The expected error rate is then 0.111. In other words, if a researcher is interested in effects of d = 0.5, and plans to collect 64 participants in each condition, setting the Type 1 error rate to `r 100*round(res1$alpha,3)`% will increase the power to `r 100*round(1-res1$beta,3)`%. If we would perform 2000 studies designed with these error rates, we would observe 0.5 (the prior probability that H0 is true) × 0.100 (the alpha level) × 2000 = 100 Type 1 errors, and 0.5 (the prior probability that H1 is true) × 0.122 (the Type 2 error rate) × 2000 = 122 Type 2 errors, for a total of 222 errors instead of 250. The combined error rate is therefore 222/2000 = 0.111. Indeed ,this is the value provided as the `errorrate`. In other words, by choosing a more optimal alpha level, we can design lines of research more efficiently, because we are less likely to make errors in our statistical inferences. This did increase the probability of making a Type 1 error (because we increased the alpha level), but this is compensated by reducing the probability of a Type 2 error even more. 
 
-The figure below recreates Figure 2 in Mudge et al, 2012.
+The figure below recreates Figure 2 in Mudge et al. (2012).
 
 ```{r echo=T, results='hide', fig.show='hide'}
 # Note that printing plots is suppressed with rmarkdown here and it is simply used to generate the data.

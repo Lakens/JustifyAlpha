@@ -34,7 +34,7 @@
 optimal_sample <- function(power_function, errorgoal = 0.05, costT1T2 = 1, priorH1H0 = 1, error = "minimize", printplot = FALSE) {
 
 
-  samplesize<- optim(20, alpha_sample_solve, lower = 0, upper = 100000, method = "L-BFGS-B",
+  samplesize<- optim(20, alpha_sample_solve, lower = 2, upper = 100000, method = "L-BFGS-B",
                      power_function = power_function, errorgoal = errorgoal, costT1T2 = costT1T2, priorH1H0 = priorH1H0, error = error)$par
   samplesize <- ceiling(samplesize)
   result <- optimal_alpha(power_function = paste(stringr::str_replace(power_function, "sample_n", as.character(samplesize))), costT1T2 = costT1T2, priorH1H0 = priorH1H0, error = error)
