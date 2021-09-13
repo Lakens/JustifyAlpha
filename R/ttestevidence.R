@@ -6,7 +6,7 @@
 #' @param one.sided Indicates whether the test is one sided or two sided.
 #' @param rscale Scale of the Cauchy prior
 #' @param printplot If true prints a plot relating Bayes factors and p-values.
-#' @return alpha level required for a two-sample t-test.
+#' @return numeric alpha level required to avoid Lindley's paradox.
 #' @examples
 #' ## Avoid the Lindley paradox for a two sample t-test with 300 participants per condition
 #' ttestEvidence("lindley", 300, 300)
@@ -20,7 +20,7 @@
 
 ###Compute Bayes Factor for t-statistic and degrees of freedom###
 
-ttestEvidence <- function(evidence, n1, n2 = 0, one.sided = F, rscale = sqrt(2)/2, printplot = F) {
+ttestEvidence <- function(evidence, n1, n2 = 0, one.sided = FALSE, rscale = sqrt(2)/2, printplot = FALSE) {
   if (evidence == "lindley"){
     evidence = 1
   }
@@ -78,7 +78,7 @@ ttestEvidence <- function(evidence, n1, n2 = 0, one.sided = F, rscale = sqrt(2)/
     }
     tval[i] <- t
   }
-  plot(p, bf, type="l", lty=1, lwd=3, xlim = c(0, max(c(0.05, lindley))), ylim = c(0.1, 10), axes = F, xlab = "p-value", ylab = "Bayes factor", log = "y")
+  plot(p, bf, type="l", lty=1, lwd=3, xlim = c(0, max(c(0.05, lindley))), ylim = c(0.1, 10), axes = FALSE, xlab = "p-value", ylab = "Bayes factor", log = "y")
   axis(side=1, at = c(0, as.numeric(lindley), as.numeric(moderate), as.numeric(strong), 0.05, indicated), labels = c(0, round(lindley, digits = 3), round(moderate, digits = 3), round(strong, digits = 3), 0.05, round(indicated, digits = 3)),  lwd = 3, las = 3)
   axis(side=2, at = c(0.1, 0.33, 1, 3, 10), labels = c("1/10", "1/3", 1, 3, 10), lwd = 3)
   points(indicated, evidence, col = "red", lwd = 4)

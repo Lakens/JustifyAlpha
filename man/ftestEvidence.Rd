@@ -19,7 +19,7 @@ Users that are more familiar with Bayesian statistics can also directly enter th
 \item{printplot}{If true prints a plot relating Bayes factors and p-values.}
 }
 \value{
-alpha level required for a two-sample t-test.
+numeric alpha level required to avoid Lindley's paradox.
 }
 \description{
 Justify your alpha level by avoiding the Lindley paradox or aiming for moderate or strong evidence when using anova.

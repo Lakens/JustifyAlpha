@@ -12,7 +12,7 @@ alpha_sample_solve <- function(i, power_function, errorgoal, costT1T2, priorH1H0
   (errorgoal - res$errorrate)^2
 }
 
-bf_t.test <- function(t, n1, n2 = 0, rscale = sqrt(2)/2, one.sided = F){
+bf_t.test <- function(t, n1, n2 = 0, rscale = sqrt(2)/2, one.sided = FALSE){
   # if (n2 == 0) {
   #   v <- n1 -1
   #   N <- n1
@@ -20,7 +20,7 @@ bf_t.test <- function(t, n1, n2 = 0, rscale = sqrt(2)/2, one.sided = F){
   #   N <- n1*n2/(n1+n2)
   #   v <- n1 + n2 -2
   # }
-  # if (Cauchy == F) {
+  # if (Cauchy == FALSE) {
   #   ml1 <- 1/sqrt(1+N)*(1+t^2/((1+N)*v))^(-(v+1)/2)
   #   ml0 <- (1+t^2/v)^(-(v+1)/2)
   #   return(ml1/ml0)
@@ -33,7 +33,7 @@ bf_t.test <- function(t, n1, n2 = 0, rscale = sqrt(2)/2, one.sided = F){
   }
 }
 
-bf_bic <- function(F, df1, df2, repeated=FALSE, report.as="BF10") {
+bf_bic <- function(Fval, df1, df2, repeated=FALSE, report.as="BF10") {
   if (repeated==FALSE) {
     N = df1+df2+1
   }
@@ -41,7 +41,7 @@ bf_bic <- function(F, df1, df2, repeated=FALSE, report.as="BF10") {
     N = df1+df2
   }
 
-  bf = sqrt(N^df1*(1+F*df1/df2)^(-1*N))
+  bf = sqrt(N^df1*(1+Fval*df1/df2)^(-1*N))
 
   if (report.as=="BF01"){
     return(c(B01=bf))

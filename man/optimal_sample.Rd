@@ -27,11 +27,13 @@ optimal_sample(
 \item{printplot}{Print a plot to illustrate the alpha level calculation. This will make the function considerably slower.}
 }
 \value{
+Returns a list of the following
 alpha = alpha or Type 1 error that minimizes or balances combined error rates,
 beta = beta or Type 2 error that minimizes or balances combined error rates,
 errorrate = weighted combined error rate,
 objective = value that is the result of the minimization, either 0 (for balance) or the combined weighted error rates,
 samplesize = the desired samplesize.
+plot = plot of alpha, beta, and error rate as a function of samplesize (only if printplot = TRUE)
 }
 \description{
 Justify your alpha level by minimizing or balancing Type 1 and Type 2 error rates.
@@ -44,12 +46,11 @@ Maier & Lakens (2021). Justify Your Alpha: A Primer on Two Practical Approaches
 \examples{
 ## Optimize power for a independent t-test, smallest effect of interest
 ## d = 0.5, desired weighted combined error rate = 5\%
-\dontrun{
 res <- optimal_sample(power_function = "pwr::pwr.t.test(d = 0.5, n = sample_n, sig.level = x,
 type = 'two.sample', alternative = 'two.sided')$power",errorgoal = 0.05)
 res$alpha
 res$beta
 res$errorrate
 res$samplesize
-}
+
 }

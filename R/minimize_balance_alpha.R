@@ -5,11 +5,14 @@
 #' @param error Either "minimize" to minimize error rates, or "balance" to balance error rates.
 #' @param verbose Print each iteration of the optimization function if TRUE. Defaults to FALSE.
 #' @param printplot Print a plot to illustrate the alpha level calculation.
-#' @return
+#' 
+#' @return Returns a list of the following
 #' alpha = alpha or Type 1 error that minimizes or balances combined error rates,
 #' beta = beta or Type 2 error that minimizes or balances combined error rates,
 #' errorrate = weighted combined error rate,
 #' objective = value that is the result of the minimization, either 0 (for balance) or the combined weighted error rates.
+#' plot_data = data used for plotting (only if printplot = TRUE)
+#' plot = plot of error rates depending on alpha (only if printplot = TRUE)
 #'
 #' @examples
 #' ## Optimize power for a independent t-test, smallest effect of interest

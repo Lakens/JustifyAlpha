@@ -12,7 +12,7 @@ Authors@R:
            email = "D.Lakens@tue.nl",
            comment = c(ORCID = "0000-0002-0247-239X"))
     )
-Description: Functions to justify alpha levels for statistical hypothesis tests as a function of the sample size, or by minimizing or balancing error rates.
+Description: This package contains functions to justify alpha levels for statistical hypothesis tests as a function of the sample size, or by minimizing or balancing error rates. For more information about the package please read the following: Maier & Lakens (2021) <doi:10.31234/osf.io/ts4r6>).
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

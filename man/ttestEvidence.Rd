@@ -8,9 +8,9 @@ ttestEvidence(
   evidence,
   n1,
   n2 = 0,
-  one.sided = F,
+  one.sided = FALSE,
   rscale = sqrt(2)/2,
-  printplot = F
+  printplot = FALSE
 )
 }
 \arguments{
@@ -28,7 +28,7 @@ Users that are more familiar with Bayesian statistics can also directly enter th
 \item{printplot}{If true prints a plot relating Bayes factors and p-values.}
 }
 \value{
-alpha level required for a two-sample t-test.
+numeric alpha level required to avoid Lindley's paradox.
 }
 \description{
 Justify your alpha level by avoiding the Lindley paradox or aiming for moderate or strong evidence when using a t-test.

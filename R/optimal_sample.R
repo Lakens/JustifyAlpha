@@ -5,24 +5,24 @@
 #' @param priorH1H0 How much more likely a-priori is H1 than H0?
 #' @param error Either "minimize" to minimize error rates, or "balance" to balance error rates.
 #' @param printplot Print a plot to illustrate the alpha level calculation. This will make the function considerably slower.
-#' @return
+#' @return Returns a list of the following
 #' alpha = alpha or Type 1 error that minimizes or balances combined error rates,
 #' beta = beta or Type 2 error that minimizes or balances combined error rates,
 #' errorrate = weighted combined error rate,
 #' objective = value that is the result of the minimization, either 0 (for balance) or the combined weighted error rates,
 #' samplesize = the desired samplesize.
+#' plot = plot of alpha, beta, and error rate as a function of samplesize (only if printplot = TRUE)
 #'
 #' @examples
 #' ## Optimize power for a independent t-test, smallest effect of interest
 #' ## d = 0.5, desired weighted combined error rate = 5%
-#' \dontrun{
 #' res <- optimal_sample(power_function = "pwr::pwr.t.test(d = 0.5, n = sample_n, sig.level = x,
 #' type = 'two.sample', alternative = 'two.sided')$power",errorgoal = 0.05)
 #' res$alpha
 #' res$beta
 #' res$errorrate
 #' res$samplesize
-#' }
+#' 
 #' @section References:
 #' Maier & Lakens (2021). Justify Your Alpha: A Primer on Two Practical Approaches
 #' @importFrom stats optimize
@@ -53,9 +53,7 @@ optimal_sample <- function(power_function, errorgoal = 0.05, costT1T2 = 1, prior
     #print(paste("Progress: ", round((i/(samplesize + 20))*100, digits =0), "%", sep = ""))
     }
 
-    defaultW <- getOption("warn")
 
-    options(warn = -1)
     line <- rep(0.05, length(Samplesize))
     dataplot <- as.data.frame(cbind(alphas, betas, Error, Samplesize, line))
 
@@ -80,7 +78,6 @@ optimal_sample <- function(power_function, errorgoal = 0.05, costT1T2 = 1, prior
 
     plot <- plot +  ggplot2::geom_segment(ggplot2::aes(x = samplesize, xend = samplesize, y = (costT1T2 * result$alpha + priorH1H0 * result$beta) / (costT1T2 + priorH1H0), yend = -Inf), color = "red", linetype = "dotted")
     print(plot)
-    options(warn = defaultW)
 
 
   }
@@ -91,7 +88,7 @@ optimal_sample <- function(power_function, errorgoal = 0.05, costT1T2 = 1, prior
                  errorrate = (costT1T2 * result$alpha + priorH1H0 * result$beta) / (costT1T2 + priorH1H0),
                  objective = result$objective,
                  samplesize = samplesize,
-                plot = plot
+                 plot = plot
   )
   } else {
     list(alpha = result$alpha,
