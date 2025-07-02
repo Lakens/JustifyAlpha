@@ -1,6 +1,6 @@
 citHeader("To cite JustifyAlpha, please use:")
 
-citEntry(entry = "Unpublished",
+bibentry(entry = "Unpublished",
   author = c(person(given = "Maximilian",
            family = "Maier",
            role = c("aut", "cre"),
@@ -14,5 +14,6 @@ citEntry(entry = "Unpublished",
   year = "2021",
   note = "Self Published on GitHub",
   url = "https://lakens.github.io/JustifyAlpha/",
-  textVersion = "M. Maier, D. Lakens. (2021). Justify Your Alpha: A Primer on Two Practical Approaches. https://lakens.github.io/JustifyAlpha/"
+  textVersion = "M. Maier, D. Lakens. (2021). Justify Your Alpha: A Primer on Two Practical Approaches. https://lakens.github.io/JustifyAlpha/",
+  bibtype = "Misc"
 )
