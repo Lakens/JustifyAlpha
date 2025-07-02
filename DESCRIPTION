@@ -1,6 +1,6 @@
 Package: JustifyAlpha
 Title: Justifying Alpha Levels for Hypothesis Tests
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: 
     c(person(given = "Maximilian",
            family = "Maier",
