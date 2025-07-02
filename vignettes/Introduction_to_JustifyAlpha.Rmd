@@ -209,8 +209,6 @@ res <- optimal_alpha(power_function = "Superpower::ANOVA_exact( (Superpower::ANO
 res$alpha
 res$beta
 res$errorrate
-res$plot
-
 ```
 
 # Avoiding the Lindley Paradox

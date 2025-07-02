@@ -5,6 +5,24 @@ library(shinydashboard)
 library(BayesFactor)
 library(JustifyAlpha)
 
+bf_bic <- function(Fval, df1, df2, repeated=FALSE, report.as="BF10") {
+  if (repeated==FALSE) {
+    N = df1+df2+1
+  }
+  else {
+    N = df1+df2
+  }
+  
+  bf = sqrt(N^df1*(1+Fval*df1/df2)^(-1*N))
+  
+  if (report.as=="BF01"){
+    return(c(B01=bf))
+  }
+  else {
+    return(c(B10=1/bf))
+  }
+}
+
 ui <- dashboardPage(
   dashboardHeader(title = "Justify Your Alpha"),
   dashboardSidebar(

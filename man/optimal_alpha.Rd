@@ -50,5 +50,5 @@ res <- optimal_alpha(power_function = "pwr::pwr.t.test(d = 0.5, n = 100,
 sig.level = x, type = 'two.sample', alternative = 'two.sided')$power")
 res$alpha
 res$beta
-res$errorate
+res$errorrate
 }

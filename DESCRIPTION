@@ -27,8 +27,7 @@ Imports:
     Superpower, 
     pwr,
     shinydashboard, 
-    qpdf, 
-    pwrss 
+    qpdf
 Suggests: 
     knitr,
     rmarkdown,

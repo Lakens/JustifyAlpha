@@ -33,7 +33,10 @@
 
 optimal_sample <- function(power_function, errorgoal = 0.05, costT1T2 = 1, priorH1H0 = 1, error = "minimize", printplot = FALSE) {
 
-
+  if (!grepl("= x", power_function) | !grepl("= x", power_function)) {
+    stop("Error: The power function must include 'alpha = x' or 'sig.level = x' (depending on what determines the alpha level in the used package) for optimization to work.")
+  }
+  
   samplesize<- optim(20, alpha_sample_solve, lower = 2, upper = 100000, method = "L-BFGS-B",
                      power_function = power_function, errorgoal = errorgoal, costT1T2 = costT1T2, priorH1H0 = priorH1H0, error = error)$par
   samplesize <- ceiling(samplesize)

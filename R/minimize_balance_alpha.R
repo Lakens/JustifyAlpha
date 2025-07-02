@@ -21,7 +21,7 @@
 #' sig.level = x, type = 'two.sample', alternative = 'two.sided')$power")
 #' res$alpha
 #' res$beta
-#' res$errorate
+#' res$errorrate
 #' @section References:
 #' Maier & Lakens (2021). Justify Your Alpha: A Primer on Two Practical Approaches
 #' @importFrom stats optimize
@@ -30,6 +30,10 @@
 #'
 optimal_alpha <- function(power_function, costT1T2 = 1, priorH1H0 = 1, error = "minimize", verbose = FALSE, printplot = FALSE) {
   #Define the function to be minimized
+  if (!(grepl("= x", power_function) | grepl("=x", power_function))) {
+    stop("Error: The power function must include 'alpha = x' or 'sig.level = x' (depending on what determines the alpha level in the used package) for optimization to work.")
+  }
+  
   f = function(x, power_function, costT1T2 = 1, priorH1H0 = 1, error = "minimize") {
     y <- 1 - eval(parse(text=paste(power_function)))
     if(verbose == TRUE){
